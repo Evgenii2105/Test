@@ -7,10 +7,17 @@
 
 import Foundation
 
-protocol DataContainer {
+protocol DataContainer: AnyObject {
     
     var personalArray: [DataContainerImpl.Section] { get }
     var children: [Child] { get }
+    
+    func addChild(_ child: Child)
+    func removeChild(at index: Int)
+    
+    func getChildren() -> [Child]
+    func clearChildren()
+    func index(for section: Int) -> DataContainerImpl.Section
 }
 
 struct Child {
@@ -36,7 +43,7 @@ class DataContainerImpl: DataContainer {
     var children: [Child] = []
     
     func index(for section: Int) -> Section {
-       
+        
         return Section(rawValue: section) ?? .children
     }
     
@@ -44,7 +51,18 @@ class DataContainerImpl: DataContainer {
         children.append(child)
     }
     
-    func remove(_ index: Int) {
+    func removeChild(at index: Int) {
+        guard index >= 0, index < children.count else {
+            return
+        }
         children.remove(at: index)
+    }
+    
+    func getChildren() -> [Child] {
+        return children
+    }
+    
+    func clearChildren() {
+        children.removeAll()
     }
 }

@@ -42,6 +42,7 @@ class CustomTableCell: UITableViewCell {
     private let myTextAge: UITextField = {
         let myTextAge = UITextField()
         myTextAge.placeholder = "Введите возраст"
+        myTextAge.keyboardType = .numberPad
         myTextAge.translatesAutoresizingMaskIntoConstraints = false
         return myTextAge
     }()
@@ -63,17 +64,18 @@ class CustomTableCell: UITableViewCell {
     }
     
     func configure(with data: Child) {
-        
-        titleLabelName.text = data.name
-       // subtitleLabelName.text = "\(data.age)"
-        
-        print("добавление PersonalData")
-        myText.placeholder = "Введите \(data.name)"
+        myText.text = data.name
+        myTextAge.text = "\(data.age)"
     }
     
     private func configureTableText() {
         myText.delegate = self
         myTextAge.delegate = self
+    }
+    
+    func clearFields() {
+        myText.text = ""
+        myTextAge.text = ""
     }
     
     private func setupConstraints() {

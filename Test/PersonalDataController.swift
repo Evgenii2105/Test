@@ -11,7 +11,7 @@ class PersonalDataController: UIViewController {
     
     private var containerConstraint: NSLayoutConstraint?
     
-    private var tableDataSource = DataContainerImpl()
+    private var tableDataSource: DataContainer = DataContainerImpl()
     
     private var tableView: UITableView = {
         let tableView = UITableView()
@@ -60,8 +60,9 @@ class PersonalDataController: UIViewController {
         setupTableHeaderView()
         setupTableFooterView()
         setupConstaints()
+        setupNotifications()
         
-        footerButton.addTarget(self, action: #selector(removeButton), for: .touchUpInside)
+        footerButton.addTarget(self, action: #selector(openAlert), for: .touchUpInside)
     }
     
     func setupTableHeaderView() {
@@ -76,6 +77,10 @@ class PersonalDataController: UIViewController {
         footerButtonContainer.addSubview(footerButton)
         footerButtonContainer.frame = CGRect(x: 50, y: 400, width: 250, height: 50)
         footerButton.frame = CGRect(x: 15, y: 400, width: 250, height: 50)
+        let footerHeight: CGFloat = 50
+        footerButtonContainer.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: footerHeight)
+        let buttonSize = CGSize(width: 250, height: footerHeight)
+        footerButton.frame = CGRect(x: footerButtonContainer.frame.width / 2 - buttonSize.width / 2, y: 0, width: buttonSize.width, height: buttonSize.height)
     }
     
     func setupConstaints() {
@@ -91,6 +96,18 @@ class PersonalDataController: UIViewController {
     @objc
     private func removeButton(_ sender: UIButton) {
         print("кнопка нажата!!!!")
+        
+        tableDataSource.children.forEach({ _ in
+            tableDataSource.removeChild(at: 0)
+        })
+        
+        if let dataSource = tableDataSource as? DataContainerImpl {
+            dataSource.personalArray = [.personalData, .children]
+        }
+        
+        // tableDataSource.personalArray = [.personalData, .children]
+        
+        tableView.reloadData()
     }
     
     @objc
@@ -114,6 +131,17 @@ class PersonalDataController: UIViewController {
         }
     }
     
+    func setupNotifications() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(moveContentUp),
+                                               name: UIResponder.keyboardWillShowNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(moveContentDown),
+                                               name: UIResponder.keyboardWillHideNotification,
+                                               object: nil)
+    }
+    
     private func configureTableView() {
         tableView.delegate = self
         tableView.dataSource = self
@@ -122,10 +150,36 @@ class PersonalDataController: UIViewController {
         tableView.register(ChildDataCell.self, forCellReuseIdentifier: ChildDataCell.cellIdentifier)
         tableView.allowsSelectionDuringEditing = true
     }
+    
+    @objc
+    private func openAlert() {
+        let alert = UIAlertController(title: "Сбросить данные?", message: "", preferredStyle: .alert)
+        let resetButton = UIAlertAction(title: "Сбросить данные", style: .default) { _ in
+            
+            
+            self.tableDataSource.clearChildren()
+            
+            self.tableView.reloadData()
+            self.clearTextFields()
+        }
+        
+        let cancelButton = UIAlertAction(title: "Отмена", style: .cancel)
+        alert.addAction(resetButton)
+        alert.addAction(cancelButton)
+        
+        present(alert, animated: true)
+    }
+    
+    func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default)
+        alert.addAction(okAction)
+        present(alert, animated: true)
+    }
 }
 
 
-extension PersonalDataController: UITableViewDelegate, UITableViewDataSource,  headerDelegate {
+extension PersonalDataController: UITableViewDelegate, UITableViewDataSource,  HeaderDelegate, ChildDataCellDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return tableDataSource.personalArray.count + tableDataSource.children.count
@@ -138,13 +192,9 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource,  h
         switch data {
         case .personalData:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: CustomTableCell.cellIdentifier, for: indexPath) as? CustomTableCell else {
-                print("выстаавляю персонал дата")
                 return UITableViewCell()
             }
             return cell
-            
-            // cell.configure(with: tableItem)
-            // return cell
             
         case .addChildren:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ChildrenHeaderCell.cellIdentifier, for: indexPath) as? ChildrenHeaderCell else {
@@ -152,6 +202,13 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource,  h
             }
             
             cell.delegate = self
+            
+            if tableDataSource.children.count >= 5  {
+                cell.setAddButtonVisibility(isHidden: true)
+            } else {
+                cell.setAddButtonVisibility(isHidden: false)
+            }
+            
             return cell
             
         case .children:
@@ -160,18 +217,75 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource,  h
             }
             let childIndex = indexPath.row - tableDataSource.personalArray.count
             cell.configure(with: tableDataSource.children[childIndex])
+            cell.delegate = self
             
             return cell
         }
     }
+    
+    private func clearTextFields() {
+        
+        for cell in tableView.visibleCells {
+            if let customCell = cell as? CustomTableCell {
+                customCell.clearFields()
+            }
+            if let childCell = cell as? ChildDataCell {
+                childCell.clearFields()
+            }
+        }
+    }
+    
     func tapAddChildren(name: String, age: Int) {
         
-        let newChildData = Child(name: name, age: age)
-        tableDataSource.children.append(newChildData)
+        if tableDataSource.children.count < 5 {
+            let newChildData = Child(name: name, age: age)
+            tableDataSource.addChild(newChildData)
+            print(tableDataSource.children)
+            tableView.reloadData()
+            
+            if tableDataSource.getChildren().count >= 5 {
+                hideAddButton()
+            }
+        } else {
+            print("Добавление невозможно: достигнут лимит детей.")
+        }
+    }
+    
+    private func hideAddButton() {
         
-        print("кнопка нажата через делегат")
+        let indexPath = IndexPath(row: 1, section: 0)
+        if let headerCell = tableView.cellForRow(at: indexPath) as? ChildrenHeaderCell {
+            headerCell.setAddButtonVisibility(isHidden: true)
+        }
+    }
+    
+    func didTapDeleteButton(cell: ChildDataCell) {
+        
+        guard let indexPath = tableView.indexPath(for: cell) else { return  }
+        
+        let childIndex = indexPath.row - tableDataSource.personalArray.count
+        tableDataSource.removeChild(at: childIndex)
         
         tableView.reloadData()
-        print("Ребенок добавлен через делегат")
+        
+        if tableDataSource.children.count < 5 {
+            let headerIndexPath = IndexPath(row: 1, section: 0)
+            if let headerCell = tableView.cellForRow(at: headerIndexPath) as? ChildrenHeaderCell {
+                headerCell.setAddButtonVisibility(isHidden: false)
+            }
+        }
+    }
+    
+    func didUpdateChildData(cell: ChildDataCell, name: String, age: Int) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        
+        let childIndex = indexPath.row - tableDataSource.personalArray.count
+        
+        var updatedChild = tableDataSource.children[childIndex]
+        updatedChild.name = name
+        updatedChild.age = age
+        
+        tableDataSource.removeChild(at: childIndex)
+        tableDataSource.addChild(updatedChild)
     }
 }

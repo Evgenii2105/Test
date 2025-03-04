@@ -7,9 +7,17 @@
 
 import UIKit
 
+protocol ChildDataCellDelegate: AnyObject {
+    
+    func didTapDeleteButton(cell: ChildDataCell)
+    func didUpdateChildData(cell: ChildDataCell, name: String, age: Int)
+}
+
 class ChildDataCell: UITableViewCell {
     
     static let cellIdentifier = "DataChildCell"
+    
+    weak var delegate: ChildDataCellDelegate?
     
     private let textChildrenName: UITextField = {
         let textChildrenName = UITextField()
@@ -42,6 +50,7 @@ class ChildDataCell: UITableViewCell {
     private let textAgeChildren: UITextField = {
         let textAgeChildren = UITextField()
         textAgeChildren.placeholder = "Введите возраст"
+        textAgeChildren.keyboardType = .numberPad
         textAgeChildren.translatesAutoresizingMaskIntoConstraints = false
         return textAgeChildren
     }()
@@ -68,6 +77,8 @@ class ChildDataCell: UITableViewCell {
         
         setupConstraints()
         configureTableText()
+        
+        deleteChildren.addTarget(self, action: #selector(deleteChildrenButton), for: .touchUpInside)
     }
     
     @available(*, unavailable)
@@ -75,13 +86,29 @@ class ChildDataCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    @objc
+    func deleteChildrenButton(_ sender: UIButton) {
+        print("кнопка нажата")
+        delegate?.didTapDeleteButton(cell: self)
+    }
+    
     private func configureTableText() {
         textChildrenName.delegate = self
         textAgeChildren.delegate = self
+        
+        textChildrenName.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        textAgeChildren.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        
     }
     
     func configure(with data: Child) {
-
+        textChildrenName.text = data.name
+        textAgeChildren.text = "\(data.age)"
+    }
+    
+    func clearFields() {
+        textChildrenName.text = ""
+        textAgeChildren.text = ""
     }
     
     private func setupConstraints() {
@@ -121,6 +148,13 @@ extension ChildDataCell: UITextFieldDelegate {
         let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
         
         return updatedText.count <= 30
+    }
+    
+    @objc
+    private func textFieldDidChange(_ textField: UITextField) {
+        let name = textChildrenName.text ?? ""
+        let age = Int(textAgeChildren.text ?? "") ?? 0
+        delegate?.didUpdateChildData(cell: self, name: name, age: age)
     }
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {

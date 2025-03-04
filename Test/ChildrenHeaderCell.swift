@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol headerDelegate: AnyObject {
+protocol HeaderDelegate: AnyObject {
     func tapAddChildren(name: String, age: Int)
 }
 
@@ -15,7 +15,7 @@ class ChildrenHeaderCell: UITableViewCell {
     
     static let cellIdentifier = "ChildrenHeaderCell"
     
-    weak var delegate: headerDelegate?
+    weak var delegate: HeaderDelegate?
     
     private let childrenLabel: UILabel = {
         let childrenLabel = UILabel()
@@ -57,10 +57,15 @@ class ChildrenHeaderCell: UITableViewCell {
         delegate?.tapAddChildren(name: "", age: 0)
         print("кнопка нажата")
     }
-        
+    
+    func setAddButtonVisibility(isHidden: Bool ) {
+        addChildren.isHidden = isHidden
+        addChildren.isEnabled = !isHidden
+    }
+    
     
     func configure(with data: Child) {
-    
+      
     }
     
     func setupConstraints() {

@@ -10,7 +10,8 @@ import UIKit
 protocol ChildDataCellDelegate: AnyObject {
     
     func didTapDeleteButton(cell: ChildDataCell)
-    func didUpdateChildData(cell: ChildDataCell, name: String, age: Int)
+    func didUpdateChildName(cell: ChildDataCell, name: String)
+    func didUpdateChildAge(cell: ChildDataCell, age: Int)
 }
 
 class ChildDataCell: UITableViewCell {
@@ -88,16 +89,12 @@ class ChildDataCell: UITableViewCell {
     
     @objc
     func deleteChildrenButton(_ sender: UIButton) {
-        print("кнопка нажата")
         delegate?.didTapDeleteButton(cell: self)
     }
     
     private func configureTableText() {
         textChildrenName.delegate = self
         textAgeChildren.delegate = self
-        
-        textChildrenName.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-        textAgeChildren.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         
     }
     
@@ -150,13 +147,6 @@ extension ChildDataCell: UITextFieldDelegate {
         return updatedText.count <= 30
     }
     
-    @objc
-    private func textFieldDidChange(_ textField: UITextField) {
-        let name = textChildrenName.text ?? ""
-        let age = Int(textAgeChildren.text ?? "") ?? 0
-        delegate?.didUpdateChildData(cell: self, name: name, age: age)
-    }
-    
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         return true
     }
@@ -169,5 +159,15 @@ extension ChildDataCell: UITextFieldDelegate {
         textField.resignFirstResponder()
         return true
     }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        
+        if textField == textChildrenName {
+            let name = textChildrenName.text ?? ""
+            delegate?.didUpdateChildName(cell: self, name: name)
+        } else if textField == textAgeChildren {
+            let age = Int(textAgeChildren.text ?? "") ?? 0
+            delegate?.didUpdateChildAge(cell: self, age: age)
+        }
+    }
 }
-

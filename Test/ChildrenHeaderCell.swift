@@ -63,11 +63,6 @@ class ChildrenHeaderCell: UITableViewCell {
         addChildren.isEnabled = !isHidden
     }
     
-    
-    func configure(with data: Child) {
-      
-    }
-    
     func setupConstraints() {
         
         NSLayoutConstraint.activate([
@@ -78,7 +73,6 @@ class ChildrenHeaderCell: UITableViewCell {
             
             childrenLabel.centerYAnchor.constraint(equalTo: addChildren.centerYAnchor),
             childrenLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8)
-            
         ])
     }
 }

@@ -18,6 +18,9 @@ protocol DataContainer: AnyObject {
     func getChildren() -> [Child]
     func clearChildren()
     func index(for section: Int) -> DataContainerImpl.Section
+    
+    func updateChildName(at index: Int, name: String)
+    func updateChildAge(at index: Int, age: Int)
 }
 
 struct Child {
@@ -44,7 +47,11 @@ class DataContainerImpl: DataContainer {
     
     func index(for section: Int) -> Section {
         
-        return Section(rawValue: section) ?? .children
+        if section < personalArray.count {
+            return personalArray[section]
+        } else {
+            return .children
+        }
     }
     
     func addChild(_ child: Child) {
@@ -64,5 +71,17 @@ class DataContainerImpl: DataContainer {
     
     func clearChildren() {
         children.removeAll()
+    }
+    
+    func updateChildName(at index: Int, name: String) {
+        
+        guard index < children.count else { return }
+        children[index].name = name
+    }
+    
+    func updateChildAge(at index: Int, age: Int) {
+        
+        guard index < children.count else { return }
+        children[index].age = age
     }
 }

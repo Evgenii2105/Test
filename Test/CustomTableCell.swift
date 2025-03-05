@@ -97,7 +97,6 @@ class CustomTableCell: UITableViewCell {
             myTextAge.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             myTextAge.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             myTextAge.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
-            
         ])
     }
 }

@@ -95,19 +95,18 @@ class PersonalDataController: UIViewController {
     
     @objc
     private func removeButton(_ sender: UIButton) {
-        print("кнопка нажата!!!!")
         
-        tableDataSource.children.forEach({ _ in
-            tableDataSource.removeChild(at: 0)
-        })
-        
-        if let dataSource = tableDataSource as? DataContainerImpl {
-            dataSource.personalArray = [.personalData, .children]
+        let indexPaths = (0..<tableDataSource.children.count).map {
+            IndexPath(row: tableDataSource.personalArray.count + $0, section: 0)
         }
         
-        // tableDataSource.personalArray = [.personalData, .children]
+        tableDataSource.clearChildren()
         
-        tableView.reloadData()
+        tableView.deleteRows(at: indexPaths, with: .automatic)
+        
+        if let dataSource = tableDataSource as? DataContainerImpl {
+            dataSource.personalArray = [.personalData, .addChildren]
+        }
     }
     
     @objc
@@ -179,7 +178,7 @@ class PersonalDataController: UIViewController {
 }
 
 
-extension PersonalDataController: UITableViewDelegate, UITableViewDataSource,  HeaderDelegate, ChildDataCellDelegate {
+extension PersonalDataController: UITableViewDelegate, UITableViewDataSource,  HeaderDelegate, ChildDataCellDelegate, UITextFieldDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return tableDataSource.personalArray.count + tableDataSource.children.count
@@ -238,10 +237,12 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource,  H
     func tapAddChildren(name: String, age: Int) {
         
         if tableDataSource.children.count < 5 {
+            
             let newChildData = Child(name: name, age: age)
             tableDataSource.addChild(newChildData)
-            print(tableDataSource.children)
-            tableView.reloadData()
+            
+            let newIndexPath = IndexPath(row: tableDataSource.personalArray.count + tableDataSource.children.count - 1, section: 0)
+            tableView.insertRows(at: [newIndexPath], with: .automatic)
             
             if tableDataSource.getChildren().count >= 5 {
                 hideAddButton()
@@ -266,9 +267,10 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource,  H
         let childIndex = indexPath.row - tableDataSource.personalArray.count
         tableDataSource.removeChild(at: childIndex)
         
-        tableView.reloadData()
+        tableView.deleteRows(at: [indexPath], with: .automatic)
         
         if tableDataSource.children.count < 5 {
+            
             let headerIndexPath = IndexPath(row: 1, section: 0)
             if let headerCell = tableView.cellForRow(at: headerIndexPath) as? ChildrenHeaderCell {
                 headerCell.setAddButtonVisibility(isHidden: false)
@@ -276,16 +278,25 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource,  H
         }
     }
     
-    func didUpdateChildData(cell: ChildDataCell, name: String, age: Int) {
+    func didUpdateChildName(cell: ChildDataCell, name: String) {
+        
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         
         let childIndex = indexPath.row - tableDataSource.personalArray.count
         
-        var updatedChild = tableDataSource.children[childIndex]
-        updatedChild.name = name
-        updatedChild.age = age
+        tableDataSource.updateChildName(at: childIndex, name: name)
         
-        tableDataSource.removeChild(at: childIndex)
-        tableDataSource.addChild(updatedChild)
+        tableView.reloadRows(at: [indexPath], with: .automatic)
+    }
+    
+    func didUpdateChildAge(cell: ChildDataCell, age: Int) {
+        
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        
+        let childIndex = indexPath.row - tableDataSource.personalArray.count
+        
+        tableDataSource.updateChildAge(at: childIndex, age: age)
+        
+        tableView.reloadRows(at: [indexPath], with: .automatic)
     }
 }

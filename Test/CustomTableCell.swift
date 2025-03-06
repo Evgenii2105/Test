@@ -7,15 +7,23 @@
 
 import UIKit
 
+protocol CustomTableDelegate: AnyObject {
+    
+    func didUpdatePesonalName(cell: CustomTableCell, name: String)
+    func didUpdatePesonalAge(cell: CustomTableCell, age: Int)
+}
+
 class CustomTableCell: UITableViewCell { 
     
     static let cellIdentifier = "DataItemCell"
     
-    private let myText: UITextField = {
-        let textField = UITextField()
-        textField.placeholder = "Введите имя"
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        return textField
+    weak var delegate: CustomTableDelegate?
+    
+    private let myTextName: UITextField = {
+        let myTextName = UITextField()
+        myTextName.placeholder = "Введите имя"
+        myTextName.translatesAutoresizingMaskIntoConstraints = false
+        return myTextName
     }()
     
     private let titleLabelName: UILabel = {
@@ -50,7 +58,7 @@ class CustomTableCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(titleLabelName)
-        contentView.addSubview(myText)
+        contentView.addSubview(myTextName)
         contentView.addSubview(titleLabelAge)
         contentView.addSubview(myTextAge)
         
@@ -64,17 +72,17 @@ class CustomTableCell: UITableViewCell {
     }
     
     func configure(with data: Child) {
-        myText.text = data.name
+        myTextName.text = data.name
         myTextAge.text = "\(data.age)"
     }
     
     private func configureTableText() {
-        myText.delegate = self
+        myTextName.delegate = self
         myTextAge.delegate = self
     }
     
     func clearFields() {
-        myText.text = ""
+        myTextName.text = ""
         myTextAge.text = ""
     }
     
@@ -85,11 +93,11 @@ class CustomTableCell: UITableViewCell {
             titleLabelName.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             titleLabelName.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
-            myText.topAnchor.constraint(equalTo: titleLabelName.bottomAnchor, constant: 4),
-            myText.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            myText.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            myTextName.topAnchor.constraint(equalTo: titleLabelName.bottomAnchor, constant: 4),
+            myTextName.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            myTextName.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
-            titleLabelAge.topAnchor.constraint(equalTo: myText.bottomAnchor, constant: 16),
+            titleLabelAge.topAnchor.constraint(equalTo: myTextName.bottomAnchor, constant: 16),
             titleLabelAge.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             titleLabelAge.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
@@ -124,5 +132,16 @@ extension CustomTableCell: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        
+        if textField == myTextName {
+            let name = myTextName.text ?? ""
+            delegate?.didUpdatePesonalName(cell: self, name: name)
+        } else if textField == myTextAge {
+            let age = Int(myTextAge.text ?? "") ?? 0
+            delegate?.didUpdatePesonalAge(cell: self, age: age)
+        }
     }
 }

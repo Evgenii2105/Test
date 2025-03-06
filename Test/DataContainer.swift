@@ -21,6 +21,9 @@ protocol DataContainer: AnyObject {
     
     func updateChildName(at index: Int, name: String)
     func updateChildAge(at index: Int, age: Int)
+    
+    func updatePersonalName(at index: Int, name: String)
+    func updatePersonalAge(at index: Int, age: Int)
 }
 
 struct Child {
@@ -28,6 +31,12 @@ struct Child {
     static func makeEmptyChild() -> Self {
         Child(name: "", age: 0)
     }
+    
+    var name: String
+    var age: Int
+}
+
+struct PersonalData {
     
     var name: String
     var age: Int
@@ -44,6 +53,7 @@ class DataContainerImpl: DataContainer {
     }
     
     var children: [Child] = []
+    var personalData: [PersonalData] = []
     
     func index(for section: Int) -> Section {
         
@@ -74,14 +84,22 @@ class DataContainerImpl: DataContainer {
     }
     
     func updateChildName(at index: Int, name: String) {
-        
         guard index < children.count else { return }
         children[index].name = name
     }
     
     func updateChildAge(at index: Int, age: Int) {
-        
         guard index < children.count else { return }
         children[index].age = age
+    }
+    
+    func updatePersonalName(at index: Int, name: String) {
+        guard index < personalData.count else { return }
+        personalData[index].name = name
+    }
+    
+    func updatePersonalAge(at index: Int, age: Int) {
+        guard index < personalData.count else { return }
+        personalData[index].age = age
     }
 }

@@ -94,22 +94,6 @@ class PersonalDataController: UIViewController {
     }
     
     @objc
-    private func removeButton(_ sender: UIButton) {
-        
-        let indexPaths = (0..<tableDataSource.children.count).map {
-            IndexPath(row: tableDataSource.personalArray.count + $0, section: 0)
-        }
-        
-        tableDataSource.clearChildren()
-        
-        tableView.deleteRows(at: indexPaths, with: .automatic)
-        
-        if let dataSource = tableDataSource as? DataContainerImpl {
-            dataSource.personalArray = [.personalData, .addChildren]
-        }
-    }
-    
-    @objc
     private func moveContentUp(notification: NSNotification) {
         guard let keyboardSize = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else {
             print("Ошибка")
@@ -155,7 +139,6 @@ class PersonalDataController: UIViewController {
         let alert = UIAlertController(title: "Сбросить данные?", message: "", preferredStyle: .alert)
         let resetButton = UIAlertAction(title: "Сбросить данные", style: .default) { _ in
             
-            
             self.tableDataSource.clearChildren()
             
             self.tableView.reloadData()
@@ -178,7 +161,7 @@ class PersonalDataController: UIViewController {
 }
 
 
-extension PersonalDataController: UITableViewDelegate, UITableViewDataSource,  HeaderDelegate, ChildDataCellDelegate, UITextFieldDelegate {
+extension PersonalDataController: UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return tableDataSource.personalArray.count + tableDataSource.children.count
@@ -193,6 +176,8 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource,  H
             guard let cell = tableView.dequeueReusableCell(withIdentifier: CustomTableCell.cellIdentifier, for: indexPath) as? CustomTableCell else {
                 return UITableViewCell()
             }
+            
+            cell.delegate = self
             return cell
             
         case .addChildren:
@@ -234,6 +219,17 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource,  H
         }
     }
     
+    private func hideAddButton() {
+        
+        let indexPath = IndexPath(row: 1, section: 0)
+        if let headerCell = tableView.cellForRow(at: indexPath) as? ChildrenHeaderCell {
+            headerCell.setAddButtonVisibility(isHidden: true)
+        }
+    }
+}
+
+extension PersonalDataController: HeaderDelegate {
+    
     func tapAddChildren(name: String, age: Int) {
         
         if tableDataSource.children.count < 5 {
@@ -248,17 +244,12 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource,  H
                 hideAddButton()
             }
         } else {
-            print("Добавление невозможно: достигнут лимит детей.")
+            showAlert(title: "Error", message: "Добавление детей невозможно")
         }
     }
-    
-    private func hideAddButton() {
-        
-        let indexPath = IndexPath(row: 1, section: 0)
-        if let headerCell = tableView.cellForRow(at: indexPath) as? ChildrenHeaderCell {
-            headerCell.setAddButtonVisibility(isHidden: true)
-        }
-    }
+}
+
+extension PersonalDataController: ChildDataCellDelegate {
     
     func didTapDeleteButton(cell: ChildDataCell) {
         
@@ -281,22 +272,33 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource,  H
     func didUpdateChildName(cell: ChildDataCell, name: String) {
         
         guard let indexPath = tableView.indexPath(for: cell) else { return }
-        
         let childIndex = indexPath.row - tableDataSource.personalArray.count
-        
         tableDataSource.updateChildName(at: childIndex, name: name)
-        
         tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
     func didUpdateChildAge(cell: ChildDataCell, age: Int) {
         
         guard let indexPath = tableView.indexPath(for: cell) else { return }
-        
         let childIndex = indexPath.row - tableDataSource.personalArray.count
-        
         tableDataSource.updateChildAge(at: childIndex, age: age)
+        tableView.reloadRows(at: [indexPath], with: .automatic)
+    }
+}
+
+extension PersonalDataController: CustomTableDelegate {
+    
+    func didUpdatePesonalName(cell: CustomTableCell, name: String) {
         
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        tableDataSource.updatePersonalName(at: indexPath.row, name: name)
+        tableView.reloadRows(at: [indexPath], with: .automatic)
+    }
+    
+    func didUpdatePesonalAge(cell: CustomTableCell, age: Int) {
+        
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        tableDataSource.updatePersonalAge(at: indexPath.row, age: age)
         tableView.reloadRows(at: [indexPath], with: .automatic)
     }
 }

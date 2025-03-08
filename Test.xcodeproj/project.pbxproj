@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		D231367F2D65EE62005DA152 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23136772D65EE62005DA152 /* AppDelegate.swift */; };
-		D23136802D65EE62005DA152 /* CustomTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23136792D65EE62005DA152 /* CustomTableCell.swift */; };
+		D23136802D65EE62005DA152 /* PersonalDataCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23136792D65EE62005DA152 /* PersonalDataCell.swift */; };
 		D23136812D65EE62005DA152 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D231367C2D65EE62005DA152 /* SceneDelegate.swift */; };
 		D23136822D65EE62005DA152 /* PersonalDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D231367D2D65EE62005DA152 /* PersonalDataController.swift */; };
 		D23136832D65EE62005DA152 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D23136782D65EE62005DA152 /* Assets.xcassets */; };
@@ -22,7 +22,7 @@
 		D23136302D65EBC0005DA152 /* Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Test.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D23136772D65EE62005DA152 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D23136782D65EE62005DA152 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		D23136792D65EE62005DA152 /* CustomTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableCell.swift; sourceTree = "<group>"; };
+		D23136792D65EE62005DA152 /* PersonalDataCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalDataCell.swift; sourceTree = "<group>"; };
 		D231367A2D65EE62005DA152 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D231367C2D65EE62005DA152 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		D231367D2D65EE62005DA152 /* PersonalDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalDataController.swift; sourceTree = "<group>"; };
@@ -66,7 +66,7 @@
 				D23136772D65EE62005DA152 /* AppDelegate.swift */,
 				D231367C2D65EE62005DA152 /* SceneDelegate.swift */,
 				D231367D2D65EE62005DA152 /* PersonalDataController.swift */,
-				D23136792D65EE62005DA152 /* CustomTableCell.swift */,
+				D23136792D65EE62005DA152 /* PersonalDataCell.swift */,
 				D27420512D69153E00AB1646 /* ChildDataCell.swift */,
 				D27420532D691FF700AB1646 /* ChildrenHeaderCell.swift */,
 				D23136862D65EF9B005DA152 /* DataContainer.swift */,
@@ -150,7 +150,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D231367F2D65EE62005DA152 /* AppDelegate.swift in Sources */,
-				D23136802D65EE62005DA152 /* CustomTableCell.swift in Sources */,
+				D23136802D65EE62005DA152 /* PersonalDataCell.swift in Sources */,
 				D23136812D65EE62005DA152 /* SceneDelegate.swift in Sources */,
 				D23136872D65EF9B005DA152 /* DataContainer.swift in Sources */,
 				D27420542D691FF700AB1646 /* ChildrenHeaderCell.swift in Sources */,

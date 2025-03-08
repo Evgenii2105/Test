@@ -15,15 +15,16 @@ protocol DataContainer: AnyObject {
     func addChild(_ child: Child)
     func removeChild(at index: Int)
     
-    func getChildren() -> [Child]
     func clearChildren()
     func index(for section: Int) -> DataContainerImpl.Section
     
     func updateChildName(at index: Int, name: String)
     func updateChildAge(at index: Int, age: Int)
     
-    func updatePersonalName(at index: Int, name: String)
-    func updatePersonalAge(at index: Int, age: Int)
+    func updatePersonalName(name: String)
+    func updatePersonalAge(age: Int)
+    func clearPersonalData()
+    var personalData: PersonalData { get }
 }
 
 struct Child {
@@ -53,7 +54,7 @@ class DataContainerImpl: DataContainer {
     }
     
     var children: [Child] = []
-    var personalData: [PersonalData] = []
+    var personalData: PersonalData = PersonalData(name: "", age: 0)
     
     func index(for section: Int) -> Section {
         
@@ -83,7 +84,13 @@ class DataContainerImpl: DataContainer {
         children.removeAll()
     }
     
+    func clearPersonalData() {
+        personalData.age = 0
+        personalData.name = ""
+    }
+    
     func updateChildName(at index: Int, name: String) {
+        
         guard index < children.count else { return }
         children[index].name = name
     }
@@ -93,13 +100,11 @@ class DataContainerImpl: DataContainer {
         children[index].age = age
     }
     
-    func updatePersonalName(at index: Int, name: String) {
-        guard index < personalData.count else { return }
-        personalData[index].name = name
+    func updatePersonalName(name: String) {
+        personalData.name = name
     }
     
-    func updatePersonalAge(at index: Int, age: Int) {
-        guard index < personalData.count else { return }
-        personalData[index].age = age
+    func updatePersonalAge(age: Int) {
+        personalData.age = age
     }
 }

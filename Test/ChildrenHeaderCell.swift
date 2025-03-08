@@ -21,25 +21,30 @@ class ChildrenHeaderCell: UITableViewCell {
         let childrenLabel = UILabel()
         childrenLabel.text = "Детей(макс.5)"
         childrenLabel.textColor = .black
-        childrenLabel.font = .systemFont(ofSize: 18)
+        childrenLabel.font = .systemFont(ofSize: 22)
         childrenLabel.translatesAutoresizingMaskIntoConstraints = false
         return childrenLabel
     }()
     
     private let addChildren: UIButton = {
         let addChildren = UIButton()
+        var configuration = UIButton.Configuration.plain()
         addChildren.setTitle("+ Добавить ребенка", for: .normal)
         addChildren.translatesAutoresizingMaskIntoConstraints = false
         addChildren.backgroundColor = .systemBackground
         addChildren.layer.borderWidth = 2
         addChildren.layer.borderColor = UIColor.systemBlue.cgColor
         addChildren.setTitleColor(.systemBlue, for: .normal)
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
         addChildren.layer.cornerRadius = 15
+        
+        addChildren.configuration = configuration
         return addChildren
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        selectionStyle = .none
         contentView.addSubview(childrenLabel)
         contentView.addSubview(addChildren)
         
@@ -55,7 +60,6 @@ class ChildrenHeaderCell: UITableViewCell {
     @objc
     func addChildrenButton(_ sender: UIButton) {
         delegate?.tapAddChildren(name: "", age: 0)
-        print("кнопка нажата")
     }
     
     func setAddButtonVisibility(isHidden: Bool ) {

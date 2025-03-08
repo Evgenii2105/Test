@@ -61,6 +61,7 @@ class PersonalDataController: UIViewController {
         setupTableFooterView()
         setupConstaints()
         setupNotifications()
+        // tableView.separatorStyle = .none
         
         footerButton.addTarget(self, action: #selector(openAlert), for: .touchUpInside)
     }
@@ -80,7 +81,7 @@ class PersonalDataController: UIViewController {
         let footerHeight: CGFloat = 50
         footerButtonContainer.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: footerHeight)
         let buttonSize = CGSize(width: 250, height: footerHeight)
-        footerButton.frame = CGRect(x: footerButtonContainer.frame.width / 2 - buttonSize.width / 2, y: 0, width: buttonSize.width, height: buttonSize.height)
+        footerButton.frame = CGRect(x: footerButtonContainer.frame.width / 2 - buttonSize.width / 2, y: 10, width: buttonSize.width, height: buttonSize.height)
     }
     
     func setupConstaints() {
@@ -128,7 +129,7 @@ class PersonalDataController: UIViewController {
     private func configureTableView() {
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.register(CustomTableCell.self, forCellReuseIdentifier: CustomTableCell.cellIdentifier)
+        tableView.register(PersonalDataCell.self, forCellReuseIdentifier: PersonalDataCell.cellIdentifier)
         tableView.register(ChildrenHeaderCell.self, forCellReuseIdentifier: ChildrenHeaderCell.cellIdentifier)
         tableView.register(ChildDataCell.self, forCellReuseIdentifier: ChildDataCell.cellIdentifier)
         tableView.allowsSelectionDuringEditing = true
@@ -139,10 +140,9 @@ class PersonalDataController: UIViewController {
         let alert = UIAlertController(title: "Сбросить данные?", message: "", preferredStyle: .alert)
         let resetButton = UIAlertAction(title: "Сбросить данные", style: .default) { _ in
             
+            self.tableDataSource.clearPersonalData()
             self.tableDataSource.clearChildren()
-            
             self.tableView.reloadData()
-            self.clearTextFields()
         }
         
         let cancelButton = UIAlertAction(title: "Отмена", style: .cancel)
@@ -161,7 +161,7 @@ class PersonalDataController: UIViewController {
 }
 
 
-extension PersonalDataController: UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {
+extension PersonalDataController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return tableDataSource.personalArray.count + tableDataSource.children.count
@@ -173,11 +173,15 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource, UI
         
         switch data {
         case .personalData:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: CustomTableCell.cellIdentifier, for: indexPath) as? CustomTableCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: PersonalDataCell.cellIdentifier, for: indexPath) as? PersonalDataCell else {
                 return UITableViewCell()
             }
             
+            cell.configure(with: tableDataSource.personalData)
             cell.delegate = self
+            
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
+            
             return cell
             
         case .addChildren:
@@ -193,6 +197,8 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource, UI
                 cell.setAddButtonVisibility(isHidden: false)
             }
             
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
+            
             return cell
             
         case .children:
@@ -200,22 +206,11 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource, UI
                 return UITableViewCell()
             }
             let childIndex = indexPath.row - tableDataSource.personalArray.count
-            cell.configure(with: tableDataSource.children[childIndex])
+            let shouldShowSeparator = childIndex < tableDataSource.children.count - 1
+            cell.configure(with: tableDataSource.children[childIndex], shouldShowSeparator: shouldShowSeparator)
             cell.delegate = self
             
             return cell
-        }
-    }
-    
-    private func clearTextFields() {
-        
-        for cell in tableView.visibleCells {
-            if let customCell = cell as? CustomTableCell {
-                customCell.clearFields()
-            }
-            if let childCell = cell as? ChildDataCell {
-                childCell.clearFields()
-            }
         }
     }
     
@@ -240,7 +235,7 @@ extension PersonalDataController: HeaderDelegate {
             let newIndexPath = IndexPath(row: tableDataSource.personalArray.count + tableDataSource.children.count - 1, section: 0)
             tableView.insertRows(at: [newIndexPath], with: .automatic)
             
-            if tableDataSource.getChildren().count >= 5 {
+            if tableDataSource.children.count >= 5 {
                 hideAddButton()
             }
         } else {
@@ -274,7 +269,6 @@ extension PersonalDataController: ChildDataCellDelegate {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         let childIndex = indexPath.row - tableDataSource.personalArray.count
         tableDataSource.updateChildName(at: childIndex, name: name)
-        tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
     func didUpdateChildAge(cell: ChildDataCell, age: Int) {
@@ -282,23 +276,19 @@ extension PersonalDataController: ChildDataCellDelegate {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         let childIndex = indexPath.row - tableDataSource.personalArray.count
         tableDataSource.updateChildAge(at: childIndex, age: age)
-        tableView.reloadRows(at: [indexPath], with: .automatic)
     }
 }
 
 extension PersonalDataController: CustomTableDelegate {
     
-    func didUpdatePesonalName(cell: CustomTableCell, name: String) {
+    func didUpdatePesonalName(cell: PersonalDataCell, name: String) {
         
-        guard let indexPath = tableView.indexPath(for: cell) else { return }
-        tableDataSource.updatePersonalName(at: indexPath.row, name: name)
-        tableView.reloadRows(at: [indexPath], with: .automatic)
+        tableDataSource.updatePersonalName(name: name)
     }
     
-    func didUpdatePesonalAge(cell: CustomTableCell, age: Int) {
+    func didUpdatePesonalAge(cell: PersonalDataCell, age: Int) {
         
-        guard let indexPath = tableView.indexPath(for: cell) else { return }
-        tableDataSource.updatePersonalAge(at: indexPath.row, age: age)
-        tableView.reloadRows(at: [indexPath], with: .automatic)
+        tableDataSource.updatePersonalAge(age: age)
     }
 }
+

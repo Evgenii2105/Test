@@ -61,7 +61,6 @@ class PersonalDataController: UIViewController {
         setupTableFooterView()
         setupConstaints()
         setupNotifications()
-        // tableView.separatorStyle = .none
         
         footerButton.addTarget(self, action: #selector(openAlert), for: .touchUpInside)
     }
@@ -133,12 +132,13 @@ class PersonalDataController: UIViewController {
         tableView.register(ChildrenHeaderCell.self, forCellReuseIdentifier: ChildrenHeaderCell.cellIdentifier)
         tableView.register(ChildDataCell.self, forCellReuseIdentifier: ChildDataCell.cellIdentifier)
         tableView.allowsSelectionDuringEditing = true
+        tableView.separatorStyle = .none
     }
     
     @objc
     private func openAlert() {
-        let alert = UIAlertController(title: "Сбросить данные?", message: "", preferredStyle: .alert)
-        let resetButton = UIAlertAction(title: "Сбросить данные", style: .default) { _ in
+        let alert = UIAlertController(title: "Вы уверены, что хотите сбросить данные?", message: "", preferredStyle: .alert)
+        let resetButton = UIAlertAction(title: "Да", style: .destructive) { _ in
             
             self.tableDataSource.clearPersonalData()
             self.tableDataSource.clearChildren()
@@ -206,8 +206,15 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource {
                 return UITableViewCell()
             }
             let childIndex = indexPath.row - tableDataSource.personalArray.count
+            
             let shouldShowSeparator = childIndex < tableDataSource.children.count - 1
-            cell.configure(with: tableDataSource.children[childIndex], shouldShowSeparator: shouldShowSeparator)
+            
+            if !shouldShowSeparator {
+                cell.configure(with: tableDataSource.children[childIndex], shouldShowSeparator: shouldShowSeparator)
+            } else {
+                cell.configure(with: tableDataSource.children[childIndex], shouldShowSeparator: !shouldShowSeparator)
+            }
+            
             cell.delegate = self
             
             return cell
@@ -291,4 +298,3 @@ extension PersonalDataController: CustomTableDelegate {
         tableDataSource.updatePersonalAge(age: age)
     }
 }
-

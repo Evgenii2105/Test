@@ -135,7 +135,9 @@ class ChildDataCell: UITableViewCell {
     func configure(with data: Child, shouldShowSeparator: Bool) {
         textChildrenName.text = data.name.isEmpty ? "" : data.name
         textAgeChildren.text = data.age == 0 ? "" : "\(data.age)"
+        
         separatorView.isHidden = !shouldShowSeparator
+        print(separatorView.isHidden)
     }
     
     private func setupConstraints() {
@@ -175,7 +177,7 @@ class ChildDataCell: UITableViewCell {
             deleteChildren.heightAnchor.constraint(equalToConstant: 40),
             
             separatorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            separatorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -50),
+            separatorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             separatorView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             separatorView.heightAnchor.constraint(equalToConstant: 1 / UIScreen.main.scale)
         ])

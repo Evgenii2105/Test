@@ -26,31 +26,30 @@ class ChildrenHeaderCell: UITableViewCell {
         return childrenLabel
     }()
     
-    private let addChildren: UIButton = {
-        let addChildren = UIButton()
+    private let addChildrenButton: UIButton = {
+        let addChildrenButton = UIButton()
         var configuration = UIButton.Configuration.plain()
-        addChildren.setTitle("+ Добавить ребенка", for: .normal)
-        addChildren.translatesAutoresizingMaskIntoConstraints = false
-        addChildren.backgroundColor = .systemBackground
-        addChildren.layer.borderWidth = 2
-        addChildren.layer.borderColor = UIColor.systemBlue.cgColor
-        addChildren.setTitleColor(.systemBlue, for: .normal)
+        addChildrenButton.setTitle("+ Добавить ребенка", for: .normal)
+        addChildrenButton.translatesAutoresizingMaskIntoConstraints = false
+        addChildrenButton.backgroundColor = .systemBackground
+        addChildrenButton.layer.borderWidth = 2
+        addChildrenButton.layer.borderColor = UIColor.systemBlue.cgColor
+        addChildrenButton.setTitleColor(.systemBlue, for: .normal)
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
-        addChildren.layer.cornerRadius = 15
+        addChildrenButton.layer.cornerRadius = 15
         
-        addChildren.configuration = configuration
-        return addChildren
+        addChildrenButton.configuration = configuration
+        return addChildrenButton
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
         contentView.addSubview(childrenLabel)
-        contentView.addSubview(addChildren)
-        
+        contentView.addSubview(addChildrenButton)
         setupConstraints()
         
-        addChildren.addTarget(self, action: #selector(addChildrenButton), for: .touchUpInside)
+        addChildrenButton.addTarget(self, action: #selector(addChildren), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
@@ -58,24 +57,24 @@ class ChildrenHeaderCell: UITableViewCell {
     }
     
     @objc
-    func addChildrenButton(_ sender: UIButton) {
+    func addChildren(_ sender: UIButton) {
         delegate?.tapAddChildren(name: "", age: 0)
     }
     
     func setAddButtonVisibility(isHidden: Bool ) {
-        addChildren.isHidden = isHidden
-        addChildren.isEnabled = !isHidden
+        addChildrenButton.isHidden = isHidden
+        addChildrenButton.isEnabled = !isHidden
     }
     
     func setupConstraints() {
         
         NSLayoutConstraint.activate([
             
-            addChildren.topAnchor.constraint(equalTo: contentView.topAnchor),
-            addChildren.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -6),
-            addChildren.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            addChildrenButton.topAnchor.constraint(equalTo: contentView.topAnchor),
+            addChildrenButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -6),
+            addChildrenButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
-            childrenLabel.centerYAnchor.constraint(equalTo: addChildren.centerYAnchor),
+            childrenLabel.centerYAnchor.constraint(equalTo: addChildrenButton.centerYAnchor),
             childrenLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8)
         ])
     }

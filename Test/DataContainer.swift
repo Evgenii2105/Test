@@ -70,14 +70,8 @@ class DataContainerImpl: DataContainer {
     }
     
     func removeChild(at index: Int) {
-        guard index >= 0, index < children.count else {
-            return
-        }
+        guard index >= 0, index < children.count else { return }
         children.remove(at: index)
-    }
-    
-    func getChildren() -> [Child] {
-        return children
     }
     
     func clearChildren() {

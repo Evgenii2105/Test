@@ -84,12 +84,15 @@ class PersonalDataController: UIViewController {
     }
     
     func setupConstaints() {
+        containerConstraint = tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        
         NSLayoutConstraint.activate([
             
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            containerConstraint!
         ])
     }
     
@@ -104,12 +107,14 @@ class PersonalDataController: UIViewController {
         
         UIView.animate(withDuration: 0.3) {
             self.containerConstraint?.constant = -keyboardHeight
+            self.view.layoutIfNeeded()
         }
     }
     
     @objc
     private func moveContentDown(notification: NSNotification) {
         UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
             self.containerConstraint?.constant = 0
         }
     }
@@ -140,6 +145,7 @@ class PersonalDataController: UIViewController {
         let alert = UIAlertController(title: "Вы уверены, что хотите сбросить данные?", message: "", preferredStyle: .alert)
         let resetButton = UIAlertAction(title: "Да", style: .destructive) { _ in
             
+            self.tableView.endEditing(true)
             self.tableDataSource.clearPersonalData()
             self.tableDataSource.clearChildren()
             self.tableView.reloadData()
@@ -160,7 +166,6 @@ class PersonalDataController: UIViewController {
     }
 }
 
-
 extension PersonalDataController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -177,10 +182,8 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource {
                 return UITableViewCell()
             }
             
-            cell.configure(with: tableDataSource.personalData)
+            cell.configureCellPersonal(with: tableDataSource.personalData)
             cell.delegate = self
-            
-            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
             
             return cell
             
@@ -197,26 +200,20 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource {
                 cell.setAddButtonVisibility(isHidden: false)
             }
             
-            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
-            
             return cell
             
         case .children:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ChildDataCell.cellIdentifier, for: indexPath) as? ChildDataCell else {
                 return UITableViewCell()
             }
+            
             let childIndex = indexPath.row - tableDataSource.personalArray.count
             
             let shouldShowSeparator = childIndex < tableDataSource.children.count - 1
             
-            if !shouldShowSeparator {
-                cell.configure(with: tableDataSource.children[childIndex], shouldShowSeparator: shouldShowSeparator)
-            } else {
-                cell.configure(with: tableDataSource.children[childIndex], shouldShowSeparator: !shouldShowSeparator)
-            }
+            cell.configureCell(with: tableDataSource.children[childIndex], shouldShowSeparator: shouldShowSeparator)
             
             cell.delegate = self
-            
             return cell
         }
     }
@@ -240,7 +237,17 @@ extension PersonalDataController: HeaderDelegate {
             tableDataSource.addChild(newChildData)
             
             let newIndexPath = IndexPath(row: tableDataSource.personalArray.count + tableDataSource.children.count - 1, section: 0)
-            tableView.insertRows(at: [newIndexPath], with: .automatic)
+            
+            if tableDataSource.children.count > 1 {
+                let indexPathToUpdate = IndexPath(row: newIndexPath.row - 1, section: 0)
+                
+                tableView.performBatchUpdates {
+                    tableView.reloadRows(at: [indexPathToUpdate], with: .automatic)
+                    tableView.insertRows(at: [newIndexPath], with: .automatic)
+                }
+            } else {
+                tableView.insertRows(at: [newIndexPath], with: .automatic)
+            }
             
             if tableDataSource.children.count >= 5 {
                 hideAddButton()
@@ -260,7 +267,17 @@ extension PersonalDataController: ChildDataCellDelegate {
         let childIndex = indexPath.row - tableDataSource.personalArray.count
         tableDataSource.removeChild(at: childIndex)
         
-        tableView.deleteRows(at: [indexPath], with: .automatic)
+        tableView.performBatchUpdates {
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+            
+            if tableDataSource.children.count > 0 {
+                let newLastIndexPath =  IndexPath(row: tableDataSource.personalArray.count + tableDataSource.children.count - 1, section: 0)
+                
+                if indexPath != newLastIndexPath {
+                    tableView.reloadRows(at: [newLastIndexPath], with: .automatic)
+                }
+            }
+        }
         
         if tableDataSource.children.count < 5 {
             

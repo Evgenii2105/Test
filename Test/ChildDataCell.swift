@@ -27,93 +27,85 @@ class ChildDataCell: UITableViewCell {
         return separatorView
     }()
     
-    private let nameContainerChild: UIView = {
-        let nameContainerChild = UIView()
-        nameContainerChild.backgroundColor = .white
-        nameContainerChild.layer.borderColor = UIColor.lightGray.cgColor
-        nameContainerChild.layer.borderWidth = 1.0
-        nameContainerChild.layer.cornerRadius = 8.0
-        nameContainerChild.translatesAutoresizingMaskIntoConstraints = false
-        return nameContainerChild
+    private let nameChildContainer: UIView = {
+        let nameChildContainer = UIView()
+        nameChildContainer.backgroundColor = .white
+        nameChildContainer.layer.borderColor = UIColor.lightGray.cgColor
+        nameChildContainer.layer.borderWidth = 1.0
+        nameChildContainer.layer.cornerRadius = 8.0
+        nameChildContainer.translatesAutoresizingMaskIntoConstraints = false
+        return nameChildContainer
     }()
     
-    private let ageContainerChild: UIView = {
-        let ageContainerChild = UIView()
-        ageContainerChild.backgroundColor = .white
-        ageContainerChild.layer.borderColor = UIColor.lightGray.cgColor
-        ageContainerChild.layer.borderWidth = 1.0
-        ageContainerChild.layer.cornerRadius = 8.0
-        ageContainerChild.translatesAutoresizingMaskIntoConstraints = false
-        return ageContainerChild
+    private let ageChildContainer: UIView = {
+        let ageChildContainer = UIView()
+        ageChildContainer.backgroundColor = .white
+        ageChildContainer.layer.borderColor = UIColor.lightGray.cgColor
+        ageChildContainer.layer.borderWidth = 1.0
+        ageChildContainer.layer.cornerRadius = 8.0
+        ageChildContainer.translatesAutoresizingMaskIntoConstraints = false
+        return ageChildContainer
     }()
     
-    private let textChildrenName: UITextField = {
-        let textChildrenName = UITextField()
-        textChildrenName.placeholder = "Введите имя"
-        textChildrenName.translatesAutoresizingMaskIntoConstraints = false
-        return textChildrenName
+    private let ChildrenNameTextField: UITextField = {
+        let ChildrenNameTextField = UITextField()
+        ChildrenNameTextField.placeholder = "Введите имя"
+        ChildrenNameTextField.translatesAutoresizingMaskIntoConstraints = false
+        return ChildrenNameTextField
     }()
     
-    private let titleLabelNameChildren: UILabel = {
-        let titleLabelNameChildren = UILabel()
-        titleLabelNameChildren.numberOfLines = 0
-        titleLabelNameChildren.text = "Имя"
-        titleLabelNameChildren.font = .systemFont(ofSize: 24)
-        titleLabelNameChildren.font = .preferredFont(forTextStyle: .footnote)
-        titleLabelNameChildren.adjustsFontSizeToFitWidth = false
-        titleLabelNameChildren.lineBreakMode = .byWordWrapping
-        titleLabelNameChildren.textColor = .gray
-        titleLabelNameChildren.translatesAutoresizingMaskIntoConstraints = false
-        return titleLabelNameChildren
+    private let nameChildrenLabel: UILabel = {
+        let nameChildrenLabel = UILabel()
+        nameChildrenLabel.numberOfLines = 0
+        nameChildrenLabel.text = "Имя"
+        nameChildrenLabel.font = .systemFont(ofSize: 24)
+        nameChildrenLabel.font = .preferredFont(forTextStyle: .footnote)
+        nameChildrenLabel.adjustsFontSizeToFitWidth = false
+        nameChildrenLabel.lineBreakMode = .byWordWrapping
+        nameChildrenLabel.textColor = .gray
+        nameChildrenLabel.translatesAutoresizingMaskIntoConstraints = false
+        return nameChildrenLabel
     }()
     
-    private let titleLabelAgeChildren: UILabel = {
-        let titleLabelAgeChildren = UILabel()
-        titleLabelAgeChildren.text = "Возраст"
-        titleLabelAgeChildren.translatesAutoresizingMaskIntoConstraints = false
-        titleLabelAgeChildren.font = .systemFont(ofSize: 24)
-        titleLabelAgeChildren.textColor = .gray
-        titleLabelAgeChildren.font = .preferredFont(forTextStyle: .footnote)
-        return titleLabelAgeChildren
+    private let ageChildrenLabel: UILabel = {
+        let ageChildrenLabel = UILabel()
+        ageChildrenLabel.text = "Возраст"
+        ageChildrenLabel.translatesAutoresizingMaskIntoConstraints = false
+        ageChildrenLabel.font = .systemFont(ofSize: 24)
+        ageChildrenLabel.textColor = .gray
+        ageChildrenLabel.font = .preferredFont(forTextStyle: .footnote)
+        return ageChildrenLabel
     }()
     
-    private let textAgeChildren: UITextField = {
-        let textAgeChildren = UITextField()
-        textAgeChildren.placeholder = "Введите возраст"
-        textAgeChildren.keyboardType = .numberPad
-        textAgeChildren.translatesAutoresizingMaskIntoConstraints = false
-        return textAgeChildren
+    private let ChildrenAgeTextField: UITextField = {
+        let ChildrenAgeTextField = UITextField()
+        ChildrenAgeTextField.placeholder = "Введите возраст"
+        ChildrenAgeTextField.keyboardType = .numberPad
+        ChildrenAgeTextField.translatesAutoresizingMaskIntoConstraints = false
+        return ChildrenAgeTextField
     }()
     
-    private let deleteChildren: UIButton = {
-        let deleteChildren = UIButton()
+    private let deleteChildrenButton: UIButton = {
+        let deleteChildrenButton = UIButton()
         var configure = UIButton.Configuration.plain()
-        deleteChildren.setTitle("Удалить", for: .normal)
-        deleteChildren.setTitleColor(.systemBlue, for: .normal)
-        deleteChildren.layer.cornerRadius = 15
-        deleteChildren.backgroundColor = .systemBackground
-        deleteChildren.translatesAutoresizingMaskIntoConstraints = false
+        deleteChildrenButton.setTitle("Удалить", for: .normal)
+        deleteChildrenButton.setTitleColor(.systemBlue, for: .normal)
+        deleteChildrenButton.layer.cornerRadius = 15
+        deleteChildrenButton.backgroundColor = .systemBackground
+        deleteChildrenButton.translatesAutoresizingMaskIntoConstraints = false
         configure.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
-        deleteChildren.configuration = configure
-        return deleteChildren
+        deleteChildrenButton.configuration = configure
+        return deleteChildrenButton
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
-        contentView.addSubview(nameContainerChild)
-        contentView.addSubview(ageContainerChild)
-        nameContainerChild.addSubview(titleLabelNameChildren)
-        nameContainerChild.addSubview(textChildrenName)
-        ageContainerChild.addSubview(titleLabelAgeChildren)
-        ageContainerChild.addSubview(textAgeChildren)
-        contentView.addSubview(deleteChildren)
-        contentView.addSubview(separatorView)
-        
+        setupUI()
         setupConstraints()
         configureTableText()
         
-        deleteChildren.addTarget(self, action: #selector(deleteChildrenButton), for: .touchUpInside)
+        deleteChildrenButton.addTarget(self, action: #selector(deleteChildren), for: .touchUpInside)
     }
     
     @available(*, unavailable)
@@ -122,59 +114,67 @@ class ChildDataCell: UITableViewCell {
     }
     
     @objc
-    func deleteChildrenButton(_ sender: UIButton) {
+    func deleteChildren(_ sender: UIButton) {
         delegate?.didTapDeleteButton(cell: self)
     }
     
-    private func configureTableText() {
-        textChildrenName.delegate = self
-        textAgeChildren.delegate = self
-        
+    private func setupUI() {
+        contentView.addSubview(nameChildContainer)
+        contentView.addSubview(ageChildContainer)
+        nameChildContainer.addSubview(nameChildrenLabel)
+        nameChildContainer.addSubview(ChildrenNameTextField)
+        ageChildContainer.addSubview(ageChildrenLabel)
+        ageChildContainer.addSubview(ChildrenAgeTextField)
+        contentView.addSubview(deleteChildrenButton)
+        contentView.addSubview(separatorView)
     }
     
-    func configure(with data: Child, shouldShowSeparator: Bool) {
-        textChildrenName.text = data.name.isEmpty ? "" : data.name
-        textAgeChildren.text = data.age == 0 ? "" : "\(data.age)"
-        
+    private func configureTableText() {
+        ChildrenNameTextField.delegate = self
+        ChildrenAgeTextField.delegate = self
+    }
+    
+    func configureCell(with data: Child, shouldShowSeparator: Bool) {
+        ChildrenNameTextField.text = data.name.isEmpty ? "" : data.name
+        ChildrenAgeTextField.text = data.age == 0 ? "" : "\(data.age)"
         separatorView.isHidden = !shouldShowSeparator
-        print(separatorView.isHidden)
     }
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
             
-            nameContainerChild.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            nameContainerChild.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            nameContainerChild.trailingAnchor.constraint(equalTo: deleteChildren.leadingAnchor, constant: -30),
-            nameContainerChild.bottomAnchor.constraint(equalTo: ageContainerChild.topAnchor, constant: -8),
+            nameChildContainer.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            nameChildContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            nameChildContainer.trailingAnchor.constraint(equalTo: deleteChildrenButton.leadingAnchor, constant: -30),
+            nameChildContainer.bottomAnchor.constraint(equalTo: ageChildContainer.topAnchor, constant: -16),
             
-            titleLabelNameChildren.topAnchor.constraint(equalTo: nameContainerChild.topAnchor, constant: 8),
-            titleLabelNameChildren.leadingAnchor.constraint(equalTo: nameContainerChild.leadingAnchor, constant: 8),
-            titleLabelNameChildren.trailingAnchor.constraint(equalTo: nameContainerChild.trailingAnchor, constant: -8),
+            nameChildrenLabel.topAnchor.constraint(equalTo: nameChildContainer.topAnchor, constant: 8),
+            nameChildrenLabel.leadingAnchor.constraint(equalTo: nameChildContainer.leadingAnchor, constant: 8),
+            nameChildrenLabel.trailingAnchor.constraint(equalTo: nameChildContainer.trailingAnchor, constant: -8),
             
-            textChildrenName.topAnchor.constraint(equalTo: titleLabelNameChildren.bottomAnchor, constant: 8),
-            textChildrenName.leadingAnchor.constraint(equalTo: nameContainerChild.leadingAnchor, constant: 8),
-            textChildrenName.trailingAnchor.constraint(equalTo: nameContainerChild.trailingAnchor, constant: -8),
-            textChildrenName.bottomAnchor.constraint(equalTo: nameContainerChild.bottomAnchor, constant: -8),
+            ChildrenNameTextField.topAnchor.constraint(equalTo: nameChildrenLabel.bottomAnchor, constant: 8),
+            ChildrenNameTextField.leadingAnchor.constraint(equalTo: nameChildContainer.leadingAnchor, constant: 8),
+            ChildrenNameTextField.trailingAnchor.constraint(equalTo: nameChildContainer.trailingAnchor, constant: -8),
+            ChildrenNameTextField.bottomAnchor.constraint(equalTo: nameChildContainer.bottomAnchor, constant: -8),
             
-            ageContainerChild.topAnchor.constraint(equalTo: nameContainerChild.bottomAnchor, constant: 16),
-            ageContainerChild.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            ageContainerChild.trailingAnchor.constraint(equalTo: deleteChildren.leadingAnchor, constant: -30),
-            ageContainerChild.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
+            ageChildContainer.topAnchor.constraint(equalTo: nameChildContainer.bottomAnchor, constant: 16),
+            ageChildContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            ageChildContainer.trailingAnchor.constraint(equalTo: deleteChildrenButton.leadingAnchor, constant: -30),
+            ageChildContainer.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
             
-            titleLabelAgeChildren.topAnchor.constraint(equalTo: ageContainerChild.topAnchor, constant: 8),
-            titleLabelAgeChildren.leadingAnchor.constraint(equalTo: ageContainerChild.leadingAnchor, constant: 8),
-            titleLabelAgeChildren.trailingAnchor.constraint(equalTo: ageContainerChild.trailingAnchor, constant: -8),
+            ageChildrenLabel.topAnchor.constraint(equalTo: ageChildContainer.topAnchor, constant: 8),
+            ageChildrenLabel.leadingAnchor.constraint(equalTo: ageChildContainer.leadingAnchor, constant: 8),
+            ageChildrenLabel.trailingAnchor.constraint(equalTo: ageChildContainer.trailingAnchor, constant: -8),
             
-            textAgeChildren.topAnchor.constraint(equalTo: titleLabelAgeChildren.bottomAnchor, constant: 8),
-            textAgeChildren.leadingAnchor.constraint(equalTo: ageContainerChild.leadingAnchor, constant: 8),
-            textAgeChildren.trailingAnchor.constraint(equalTo: ageContainerChild.trailingAnchor, constant: -8),
-            textAgeChildren.bottomAnchor.constraint(equalTo: ageContainerChild.bottomAnchor, constant: -8),
+            ChildrenAgeTextField.topAnchor.constraint(equalTo: ageChildrenLabel.bottomAnchor, constant: 8),
+            ChildrenAgeTextField.leadingAnchor.constraint(equalTo: ageChildContainer.leadingAnchor, constant: 8),
+            ChildrenAgeTextField.trailingAnchor.constraint(equalTo: ageChildContainer.trailingAnchor, constant: -8),
+            ChildrenAgeTextField.bottomAnchor.constraint(equalTo: ageChildContainer.bottomAnchor, constant: -8),
             
-            deleteChildren.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -55),
-            deleteChildren.centerYAnchor.constraint(equalTo: nameContainerChild.centerYAnchor),
-            deleteChildren.widthAnchor.constraint(equalToConstant: 100),
-            deleteChildren.heightAnchor.constraint(equalToConstant: 40),
+            deleteChildrenButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -55),
+            deleteChildrenButton.centerYAnchor.constraint(equalTo: nameChildContainer.centerYAnchor),
+            deleteChildrenButton.widthAnchor.constraint(equalToConstant: 100),
+            deleteChildrenButton.heightAnchor.constraint(equalToConstant: 40),
             
             separatorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             separatorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
@@ -187,12 +187,10 @@ class ChildDataCell: UITableViewCell {
 extension ChildDataCell: UITextFieldDelegate {
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        
         let currentText = textField.text ?? ""
-        
         guard let stringRange = Range(range, in: currentText) else { return false }
-        
         let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
-        
         return updatedText.count <= 25
     }
     
@@ -211,11 +209,11 @@ extension ChildDataCell: UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         
-        if textField == textChildrenName {
-            let name = textChildrenName.text ?? ""
+        if textField == ChildrenNameTextField {
+            let name = ChildrenNameTextField.text ?? ""
             delegate?.didUpdateChildName(cell: self, name: name)
-        } else if textField == textAgeChildren {
-            let age = Int(textAgeChildren.text ?? "") ?? 0
+        } else if textField == ChildrenAgeTextField {
+            let age = Int(ChildrenAgeTextField.text ?? "") ?? 0
             delegate?.didUpdateChildAge(cell: self, age: age)
         }
     }

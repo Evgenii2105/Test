@@ -10,9 +10,9 @@ import Foundation
 protocol DataContainer: AnyObject {
     
     var personalArray: [DataContainerImpl.Section] { get }
-    var children: [Child] { get }
+    var children: [Personal] { get }
     
-    func addChild(_ child: Child)
+    func addChild(_ child: Personal)
     func removeChild(at index: Int)
     
     func clearChildren()
@@ -24,26 +24,21 @@ protocol DataContainer: AnyObject {
     func updatePersonalName(name: String)
     func updatePersonalAge(age: Int)
     func clearPersonalData()
-    var personalData: PersonalData { get }
+    var personalData: Personal { get }
+    var isDataEmpty: Bool { get }
 }
 
-struct Child {
+struct Personal {
     
-    static func makeEmptyChild() -> Self {
-        Child(name: "", age: 0)
-    }
-    
-    var name: String
-    var age: Int
-}
-
-struct PersonalData {
-    
-    var name: String
-    var age: Int
+    var namePeronal: String
+    var agePersonal: Int
+    var nameChild: String
+    var ageChild: Int
 }
 
 class DataContainerImpl: DataContainer {
+    
+    static let limitChildren = 5
     
     var personalArray: [Section] = [.personalData, .addChildren]
     
@@ -53,8 +48,8 @@ class DataContainerImpl: DataContainer {
         case children
     }
     
-    var children: [Child] = []
-    var personalData: PersonalData = PersonalData(name: "", age: 0)
+    var children: [Personal] = []
+    var personalData: Personal = Personal(namePeronal: "", agePersonal: 0, nameChild: "", ageChild: 0)
     
     func index(for section: Int) -> Section {
         
@@ -65,7 +60,7 @@ class DataContainerImpl: DataContainer {
         }
     }
     
-    func addChild(_ child: Child) {
+    func addChild(_ child: Personal) {
         children.append(child)
     }
     
@@ -79,26 +74,32 @@ class DataContainerImpl: DataContainer {
     }
     
     func clearPersonalData() {
-        personalData.age = 0
-        personalData.name = ""
+        personalData.namePeronal = ""
+        personalData.agePersonal = 0
+        personalData.nameChild = ""
+        personalData.ageChild = 0
     }
     
     func updateChildName(at index: Int, name: String) {
         
         guard index < children.count else { return }
-        children[index].name = name
+        children[index].nameChild = name
     }
     
     func updateChildAge(at index: Int, age: Int) {
         guard index < children.count else { return }
-        children[index].age = age
+        children[index].ageChild = age
     }
     
     func updatePersonalName(name: String) {
-        personalData.name = name
+        personalData.namePeronal = name
     }
     
     func updatePersonalAge(age: Int) {
-        personalData.age = age
+        personalData.agePersonal = age
+    }
+    
+    var isDataEmpty: Bool {
+        return personalData.namePeronal.isEmpty && personalData.agePersonal == 0 && children.isEmpty
     }
 }

@@ -98,9 +98,9 @@ class PersonalDataCell: UITableViewCell {
         ageDataContainer.addSubview(ageTextField)
     }
     
-    func configureCellPersonal(with data: PersonalData) {
-        nameTextField.text = data.name.isEmpty ? "" : data.name
-        ageTextField.text = data.age == 0 ? "" : "\(data.age)"
+    func configureCellPersonal(with data: Personal) {
+        nameTextField.text = data.namePeronal.isEmpty ? "" : data.namePeronal
+        ageTextField.text = data.agePersonal == 0 ? "" : "\(data.agePersonal)"
     }
     
     private func configureTableText() {
@@ -147,11 +147,18 @@ class PersonalDataCell: UITableViewCell {
 extension PersonalDataCell: UITextFieldDelegate {
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        
         let currentText = textField.text ?? ""
-        guard let stringRange = Range(range, in: currentText) else { return false }
-        let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
-        return updatedText.count <= 30
+        let newText = (currentText as NSString).replacingCharacters(in: range, with: string)
+        
+        let maxLength = 30
+        
+        if newText.count > maxLength {
+            let truncatedText = String(newText.prefix(maxLength))
+            textField.text = truncatedText
+            return false
+        }
+        
+        return true
     }
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
@@ -168,7 +175,6 @@ extension PersonalDataCell: UITextFieldDelegate {
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        
         if textField == nameTextField {
             let name = nameTextField.text ?? ""
             delegate?.didUpdatePesonalName(cell: self, name: name)

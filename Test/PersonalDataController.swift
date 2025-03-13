@@ -61,6 +61,7 @@ class PersonalDataController: UIViewController {
         setupTableFooterView()
         setupConstaints()
         setupNotifications()
+        updateClearButtonState()
         
         footerButton.addTarget(self, action: #selector(openAlert), for: .touchUpInside)
     }
@@ -69,21 +70,31 @@ class PersonalDataController: UIViewController {
         tableView.tableHeaderView = headerContainer
         headerContainer.addSubview(headerLabel)
         headerContainer.frame = CGRect(x: 0, y: 200, width: 250, height: 50)
-        headerLabel.frame = CGRect(x: 10, y: 0, width: 600, height: 50)
+        headerLabel.frame = CGRect(x: 0, y: 0, width: 600, height: 50)
     }
     
     func setupTableFooterView() {
         tableView.tableFooterView = footerButtonContainer
         footerButtonContainer.addSubview(footerButton)
-        footerButtonContainer.frame = CGRect(x: 50, y: 400, width: 250, height: 50)
-        footerButton.frame = CGRect(x: 15, y: 400, width: 250, height: 50)
-        let footerHeight: CGFloat = 50
-        footerButtonContainer.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: footerHeight)
-        let buttonSize = CGSize(width: 250, height: footerHeight)
-        footerButton.frame = CGRect(x: footerButtonContainer.frame.width / 2 - buttonSize.width / 2, y: 10, width: buttonSize.width, height: buttonSize.height)
+        let footerHeight: CGFloat = 60
+        let containerWidth = view.frame.width
+        
+        footerButtonContainer.frame = CGRect(
+            x: 0,
+            y: 0,
+            width: containerWidth,
+            height: footerHeight + 10
+        )
+        
+        footerButton.frame = CGRect(
+            x: (containerWidth - 250) / 2,
+            y: 10,
+            width: 250,
+            height: 50)
     }
     
     func setupConstaints() {
+        
         containerConstraint = tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         
         NSLayoutConstraint.activate([
@@ -114,8 +125,8 @@ class PersonalDataController: UIViewController {
     @objc
     private func moveContentDown(notification: NSNotification) {
         UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
             self.containerConstraint?.constant = 0
+            self.view.layoutIfNeeded()
         }
     }
     
@@ -140,18 +151,28 @@ class PersonalDataController: UIViewController {
         tableView.separatorStyle = .none
     }
     
+    private func updateClearButtonState() {
+        footerButton.isEnabled = !tableDataSource.isDataEmpty
+        footerButton.alpha = tableDataSource.isDataEmpty ? 0.5 : 1.0
+    }
+    
     @objc
     private func openAlert() {
-        let alert = UIAlertController(title: "Вы уверены, что хотите сбросить данные?", message: "", preferredStyle: .alert)
-        let resetButton = UIAlertAction(title: "Да", style: .destructive) { _ in
+        let alert = UIAlertController(title: "Вы уверены, что хотите сбросить данные?",
+                                      message: "",
+                                      preferredStyle: .alert)
+        let resetButton = UIAlertAction(title: "Да",
+                                        style: .destructive) { _ in
             
             self.tableView.endEditing(true)
             self.tableDataSource.clearPersonalData()
             self.tableDataSource.clearChildren()
             self.tableView.reloadData()
+            self.updateClearButtonState()
         }
         
-        let cancelButton = UIAlertAction(title: "Отмена", style: .cancel)
+        let cancelButton = UIAlertAction(title: "Отмена",
+                                         style: .cancel)
         alert.addAction(resetButton)
         alert.addAction(cancelButton)
         
@@ -159,8 +180,11 @@ class PersonalDataController: UIViewController {
     }
     
     func showAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .default)
+        let alert = UIAlertController(title: title,
+                                      message: message,
+                                      preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK",
+                                     style: .default)
         alert.addAction(okAction)
         present(alert, animated: true)
     }
@@ -194,11 +218,8 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource {
             
             cell.delegate = self
             
-            if tableDataSource.children.count >= 5  {
-                cell.setAddButtonVisibility(isHidden: true)
-            } else {
-                cell.setAddButtonVisibility(isHidden: false)
-            }
+            let isAddButtonHidden = tableDataSource.children.count >= DataContainerImpl.limitChildren
+            cell.setAddButtonVisibility(isHidden: isAddButtonHidden)
             
             return cell
             
@@ -231,10 +252,11 @@ extension PersonalDataController: HeaderDelegate {
     
     func tapAddChildren(name: String, age: Int) {
         
-        if tableDataSource.children.count < 5 {
+        if tableDataSource.children.count < DataContainerImpl.limitChildren {
             
-            let newChildData = Child(name: name, age: age)
-            tableDataSource.addChild(newChildData)
+            let newChildren = Personal(namePeronal: "", agePersonal: 0, nameChild: "", ageChild: 0)
+            
+            tableDataSource.addChild(newChildren)
             
             let newIndexPath = IndexPath(row: tableDataSource.personalArray.count + tableDataSource.children.count - 1, section: 0)
             
@@ -252,6 +274,7 @@ extension PersonalDataController: HeaderDelegate {
             if tableDataSource.children.count >= 5 {
                 hideAddButton()
             }
+            updateClearButtonState()
         } else {
             showAlert(title: "Error", message: "Добавление детей невозможно")
         }
@@ -277,9 +300,10 @@ extension PersonalDataController: ChildDataCellDelegate {
                     tableView.reloadRows(at: [newLastIndexPath], with: .automatic)
                 }
             }
+            updateClearButtonState()
         }
         
-        if tableDataSource.children.count < 5 {
+        if tableDataSource.children.count < DataContainerImpl.limitChildren {
             
             let headerIndexPath = IndexPath(row: 1, section: 0)
             if let headerCell = tableView.cellForRow(at: headerIndexPath) as? ChildrenHeaderCell {
@@ -293,6 +317,7 @@ extension PersonalDataController: ChildDataCellDelegate {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         let childIndex = indexPath.row - tableDataSource.personalArray.count
         tableDataSource.updateChildName(at: childIndex, name: name)
+        updateClearButtonState()
     }
     
     func didUpdateChildAge(cell: ChildDataCell, age: Int) {
@@ -300,6 +325,7 @@ extension PersonalDataController: ChildDataCellDelegate {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         let childIndex = indexPath.row - tableDataSource.personalArray.count
         tableDataSource.updateChildAge(at: childIndex, age: age)
+        updateClearButtonState()
     }
 }
 
@@ -308,10 +334,12 @@ extension PersonalDataController: CustomTableDelegate {
     func didUpdatePesonalName(cell: PersonalDataCell, name: String) {
         
         tableDataSource.updatePersonalName(name: name)
+        updateClearButtonState()
     }
     
     func didUpdatePesonalAge(cell: PersonalDataCell, age: Int) {
         
         tableDataSource.updatePersonalAge(age: age)
+        updateClearButtonState()
     }
 }

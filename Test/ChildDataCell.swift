@@ -77,12 +77,12 @@ class ChildDataCell: UITableViewCell {
         return ageChildrenLabel
     }()
     
-    private let ChildrenAgeTextField: UITextField = {
-        let ChildrenAgeTextField = UITextField()
-        ChildrenAgeTextField.placeholder = "Введите возраст"
-        ChildrenAgeTextField.keyboardType = .numberPad
-        ChildrenAgeTextField.translatesAutoresizingMaskIntoConstraints = false
-        return ChildrenAgeTextField
+    private let childrenAgeTextField: UITextField = {
+        let childrenAgeTextField = UITextField()
+        childrenAgeTextField.placeholder = "Введите возраст"
+        childrenAgeTextField.keyboardType = .numberPad
+        childrenAgeTextField.translatesAutoresizingMaskIntoConstraints = false
+        return childrenAgeTextField
     }()
     
     private let deleteChildrenButton: UIButton = {
@@ -124,19 +124,19 @@ class ChildDataCell: UITableViewCell {
         nameChildContainer.addSubview(nameChildrenLabel)
         nameChildContainer.addSubview(ChildrenNameTextField)
         ageChildContainer.addSubview(ageChildrenLabel)
-        ageChildContainer.addSubview(ChildrenAgeTextField)
+        ageChildContainer.addSubview(childrenAgeTextField)
         contentView.addSubview(deleteChildrenButton)
         contentView.addSubview(separatorView)
     }
     
     private func configureTableText() {
         ChildrenNameTextField.delegate = self
-        ChildrenAgeTextField.delegate = self
+        childrenAgeTextField.delegate = self
     }
     
-    func configureCell(with data: Child, shouldShowSeparator: Bool) {
-        ChildrenNameTextField.text = data.name.isEmpty ? "" : data.name
-        ChildrenAgeTextField.text = data.age == 0 ? "" : "\(data.age)"
+    func configureCell(with data: Personal, shouldShowSeparator: Bool) {
+        ChildrenNameTextField.text = data.nameChild.isEmpty ? "" : data.nameChild
+        childrenAgeTextField.text = data.ageChild == 0 ? "" : "\(data.ageChild)"
         separatorView.isHidden = !shouldShowSeparator
     }
     
@@ -166,10 +166,10 @@ class ChildDataCell: UITableViewCell {
             ageChildrenLabel.leadingAnchor.constraint(equalTo: ageChildContainer.leadingAnchor, constant: 8),
             ageChildrenLabel.trailingAnchor.constraint(equalTo: ageChildContainer.trailingAnchor, constant: -8),
             
-            ChildrenAgeTextField.topAnchor.constraint(equalTo: ageChildrenLabel.bottomAnchor, constant: 8),
-            ChildrenAgeTextField.leadingAnchor.constraint(equalTo: ageChildContainer.leadingAnchor, constant: 8),
-            ChildrenAgeTextField.trailingAnchor.constraint(equalTo: ageChildContainer.trailingAnchor, constant: -8),
-            ChildrenAgeTextField.bottomAnchor.constraint(equalTo: ageChildContainer.bottomAnchor, constant: -8),
+            childrenAgeTextField.topAnchor.constraint(equalTo: ageChildrenLabel.bottomAnchor, constant: 8),
+            childrenAgeTextField.leadingAnchor.constraint(equalTo: ageChildContainer.leadingAnchor, constant: 8),
+            childrenAgeTextField.trailingAnchor.constraint(equalTo: ageChildContainer.trailingAnchor, constant: -8),
+            childrenAgeTextField.bottomAnchor.constraint(equalTo: ageChildContainer.bottomAnchor, constant: -8),
             
             deleteChildrenButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -55),
             deleteChildrenButton.centerYAnchor.constraint(equalTo: nameChildContainer.centerYAnchor),
@@ -187,11 +187,18 @@ class ChildDataCell: UITableViewCell {
 extension ChildDataCell: UITextFieldDelegate {
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        
         let currentText = textField.text ?? ""
-        guard let stringRange = Range(range, in: currentText) else { return false }
-        let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
-        return updatedText.count <= 25
+        let newText = (currentText as NSString).replacingCharacters(in: range, with: string)
+        
+        let maxLength = 30
+        
+        if newText.count > maxLength {
+            let truncatedText = String(newText.prefix(maxLength))
+            textField.text = truncatedText
+            return false
+        }
+        
+        return true
     }
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
@@ -208,12 +215,11 @@ extension ChildDataCell: UITextFieldDelegate {
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        
         if textField == ChildrenNameTextField {
             let name = ChildrenNameTextField.text ?? ""
             delegate?.didUpdateChildName(cell: self, name: name)
-        } else if textField == ChildrenAgeTextField {
-            let age = Int(ChildrenAgeTextField.text ?? "") ?? 0
+        } else if textField == childrenAgeTextField {
+            let age = Int(childrenAgeTextField.text ?? "") ?? 0
             delegate?.didUpdateChildAge(cell: self, age: age)
         }
     }

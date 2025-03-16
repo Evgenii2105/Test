@@ -50,7 +50,6 @@ class PersonalDataCell: UITableViewCell {
         let nameLabel = UILabel()
         nameLabel.numberOfLines = 0
         nameLabel.text = "Имя"
-        nameLabel.font = .systemFont(ofSize: 24)
         nameLabel.font = .preferredFont(forTextStyle: .footnote)
         nameLabel.lineBreakMode = .byWordWrapping
         nameLabel.textColor = .gray
@@ -80,7 +79,7 @@ class PersonalDataCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
         setupUI()
-        configureTableText()
+        configure()
         setupConstraints()
     }
     
@@ -99,11 +98,11 @@ class PersonalDataCell: UITableViewCell {
     }
     
     func configureCellPersonal(with data: Personal) {
-        nameTextField.text = data.namePeronal.isEmpty ? "" : data.namePeronal
-        ageTextField.text = data.agePersonal == 0 ? "" : "\(data.agePersonal)"
+        nameTextField.text = data.name
+        ageTextField.text = nil
     }
     
-    private func configureTableText() {
+    private func configure() {
         nameTextField.delegate = self
         ageTextField.delegate = self
     }
@@ -121,7 +120,7 @@ class PersonalDataCell: UITableViewCell {
             nameLabel.trailingAnchor.constraint(equalTo: nameDataContainer.trailingAnchor, constant: -8),
             nameLabel.bottomAnchor.constraint(equalTo: nameTextField.topAnchor, constant: -8),
             
-            nameTextField.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 6),
+            nameTextField.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8),
             nameTextField.leadingAnchor.constraint(equalTo: nameDataContainer.leadingAnchor, constant: 8),
             nameTextField.trailingAnchor.constraint(equalTo: nameDataContainer.trailingAnchor, constant: -8),
             nameTextField.bottomAnchor.constraint(equalTo: nameDataContainer.bottomAnchor, constant: -4),
@@ -136,7 +135,7 @@ class PersonalDataCell: UITableViewCell {
             ageLabel.trailingAnchor.constraint(equalTo: ageDataContainer.trailingAnchor, constant: -8),
             ageLabel.bottomAnchor.constraint(equalTo: ageTextField.topAnchor, constant: -8),
             
-            ageTextField.topAnchor.constraint(equalTo: ageLabel.bottomAnchor, constant: 4),
+            ageTextField.topAnchor.constraint(equalTo: ageLabel.bottomAnchor, constant: 8),
             ageTextField.leadingAnchor.constraint(equalTo: ageDataContainer.leadingAnchor, constant: 8),
             ageTextField.trailingAnchor.constraint(equalTo: ageDataContainer.trailingAnchor, constant: -16),
             ageTextField.bottomAnchor.constraint(equalTo: ageDataContainer.bottomAnchor, constant: -8)
@@ -157,7 +156,6 @@ extension PersonalDataCell: UITextFieldDelegate {
             textField.text = truncatedText
             return false
         }
-        
         return true
     }
     

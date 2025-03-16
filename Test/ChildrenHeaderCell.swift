@@ -29,16 +29,16 @@ class ChildrenHeaderCell: UITableViewCell {
     private let addChildrenButton: UIButton = {
         let addChildrenButton = UIButton()
         var configuration = UIButton.Configuration.plain()
-        addChildrenButton.setTitle("+ Добавить ребенка", for: .normal)
-        addChildrenButton.translatesAutoresizingMaskIntoConstraints = false
-        addChildrenButton.backgroundColor = .systemBackground
-        addChildrenButton.layer.borderWidth = 2
-        addChildrenButton.layer.borderColor = UIColor.systemBlue.cgColor
-        addChildrenButton.setTitleColor(.systemBlue, for: .normal)
+        configuration.title = "+ Добавить ребенка"
+        configuration.background.backgroundColor = .systemBackground
+        configuration.background.strokeWidth = 2
+        configuration.baseForegroundColor = .systemBlue
+        configuration.background.strokeColor = .systemBlue
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
-        addChildrenButton.layer.cornerRadius = 15
+        configuration.background.cornerRadius = 15
         
         addChildrenButton.configuration = configuration
+        addChildrenButton.translatesAutoresizingMaskIntoConstraints = false
         return addChildrenButton
     }()
     
@@ -57,16 +57,16 @@ class ChildrenHeaderCell: UITableViewCell {
     }
     
     @objc
-    func addChildren(_ sender: UIButton) {
+    private func addChildren(_ sender: UIButton) {
         delegate?.tapAddChildren(name: "", age: 0)
     }
     
-    func setAddButtonVisibility(isHidden: Bool ) {
-        addChildrenButton.isHidden = isHidden
-        addChildrenButton.isEnabled = !isHidden
+    func configure(isAddButtonHidden: Bool) {
+        addChildrenButton.isHidden = isAddButtonHidden
+        addChildrenButton.isEnabled = !isAddButtonHidden
     }
     
-    func setupConstraints() {
+    private func setupConstraints() {
         
         NSLayoutConstraint.activate([
             

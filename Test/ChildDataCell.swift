@@ -47,7 +47,7 @@ class ChildDataCell: UITableViewCell {
         return ageChildContainer
     }()
     
-    private let ChildrenNameTextField: UITextField = {
+    private let childrenNameTextField: UITextField = {
         let ChildrenNameTextField = UITextField()
         ChildrenNameTextField.placeholder = "Введите имя"
         ChildrenNameTextField.translatesAutoresizingMaskIntoConstraints = false
@@ -58,9 +58,7 @@ class ChildDataCell: UITableViewCell {
         let nameChildrenLabel = UILabel()
         nameChildrenLabel.numberOfLines = 0
         nameChildrenLabel.text = "Имя"
-        nameChildrenLabel.font = .systemFont(ofSize: 24)
         nameChildrenLabel.font = .preferredFont(forTextStyle: .footnote)
-        nameChildrenLabel.adjustsFontSizeToFitWidth = false
         nameChildrenLabel.lineBreakMode = .byWordWrapping
         nameChildrenLabel.textColor = .gray
         nameChildrenLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -88,12 +86,12 @@ class ChildDataCell: UITableViewCell {
     private let deleteChildrenButton: UIButton = {
         let deleteChildrenButton = UIButton()
         var configure = UIButton.Configuration.plain()
-        deleteChildrenButton.setTitle("Удалить", for: .normal)
-        deleteChildrenButton.setTitleColor(.systemBlue, for: .normal)
-        deleteChildrenButton.layer.cornerRadius = 15
-        deleteChildrenButton.backgroundColor = .systemBackground
-        deleteChildrenButton.translatesAutoresizingMaskIntoConstraints = false
+        configure.title = "Удалить"
+        configure.baseForegroundColor = .systemBlue
+        configure.background.cornerRadius = 15
+        configure.background.backgroundColor = .systemBackground
         configure.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+        deleteChildrenButton.translatesAutoresizingMaskIntoConstraints = false
         deleteChildrenButton.configuration = configure
         return deleteChildrenButton
     }()
@@ -114,7 +112,7 @@ class ChildDataCell: UITableViewCell {
     }
     
     @objc
-    func deleteChildren(_ sender: UIButton) {
+    private func deleteChildren(_ sender: UIButton) {
         delegate?.didTapDeleteButton(cell: self)
     }
     
@@ -122,7 +120,7 @@ class ChildDataCell: UITableViewCell {
         contentView.addSubview(nameChildContainer)
         contentView.addSubview(ageChildContainer)
         nameChildContainer.addSubview(nameChildrenLabel)
-        nameChildContainer.addSubview(ChildrenNameTextField)
+        nameChildContainer.addSubview(childrenNameTextField)
         ageChildContainer.addSubview(ageChildrenLabel)
         ageChildContainer.addSubview(childrenAgeTextField)
         contentView.addSubview(deleteChildrenButton)
@@ -130,13 +128,13 @@ class ChildDataCell: UITableViewCell {
     }
     
     private func configureTableText() {
-        ChildrenNameTextField.delegate = self
+        childrenNameTextField.delegate = self
         childrenAgeTextField.delegate = self
     }
     
     func configureCell(with data: Personal, shouldShowSeparator: Bool) {
-        ChildrenNameTextField.text = data.nameChild.isEmpty ? "" : data.nameChild
-        childrenAgeTextField.text = data.ageChild == 0 ? "" : "\(data.ageChild)"
+        childrenNameTextField.text = data.name
+        childrenAgeTextField.text = nil
         separatorView.isHidden = !shouldShowSeparator
     }
     
@@ -152,10 +150,10 @@ class ChildDataCell: UITableViewCell {
             nameChildrenLabel.leadingAnchor.constraint(equalTo: nameChildContainer.leadingAnchor, constant: 8),
             nameChildrenLabel.trailingAnchor.constraint(equalTo: nameChildContainer.trailingAnchor, constant: -8),
             
-            ChildrenNameTextField.topAnchor.constraint(equalTo: nameChildrenLabel.bottomAnchor, constant: 8),
-            ChildrenNameTextField.leadingAnchor.constraint(equalTo: nameChildContainer.leadingAnchor, constant: 8),
-            ChildrenNameTextField.trailingAnchor.constraint(equalTo: nameChildContainer.trailingAnchor, constant: -8),
-            ChildrenNameTextField.bottomAnchor.constraint(equalTo: nameChildContainer.bottomAnchor, constant: -8),
+            childrenNameTextField.topAnchor.constraint(equalTo: nameChildrenLabel.bottomAnchor, constant: 8),
+            childrenNameTextField.leadingAnchor.constraint(equalTo: nameChildContainer.leadingAnchor, constant: 8),
+            childrenNameTextField.trailingAnchor.constraint(equalTo: nameChildContainer.trailingAnchor, constant: -8),
+            childrenNameTextField.bottomAnchor.constraint(equalTo: nameChildContainer.bottomAnchor, constant: -8),
             
             ageChildContainer.topAnchor.constraint(equalTo: nameChildContainer.bottomAnchor, constant: 16),
             ageChildContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
@@ -197,7 +195,6 @@ extension ChildDataCell: UITextFieldDelegate {
             textField.text = truncatedText
             return false
         }
-        
         return true
     }
     
@@ -215,8 +212,8 @@ extension ChildDataCell: UITextFieldDelegate {
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        if textField == ChildrenNameTextField {
-            let name = ChildrenNameTextField.text ?? ""
+        if textField == childrenNameTextField {
+            let name = childrenNameTextField.text ?? ""
             delegate?.didUpdateChildName(cell: self, name: name)
         } else if textField == childrenAgeTextField {
             let age = Int(childrenAgeTextField.text ?? "") ?? 0

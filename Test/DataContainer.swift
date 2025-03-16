@@ -11,6 +11,8 @@ protocol DataContainer: AnyObject {
     
     var personalArray: [DataContainerImpl.Section] { get }
     var children: [Personal] { get }
+    var personalData: Personal { get }
+    var isDataEmpty: Bool { get }
     
     func addChild(_ child: Personal)
     func removeChild(at index: Int)
@@ -24,16 +26,12 @@ protocol DataContainer: AnyObject {
     func updatePersonalName(name: String)
     func updatePersonalAge(age: Int)
     func clearPersonalData()
-    var personalData: Personal { get }
-    var isDataEmpty: Bool { get }
 }
 
 struct Personal {
     
-    var namePeronal: String
-    var agePersonal: Int
-    var nameChild: String
-    var ageChild: Int
+    var name: String
+    var age: Int
 }
 
 class DataContainerImpl: DataContainer {
@@ -49,7 +47,7 @@ class DataContainerImpl: DataContainer {
     }
     
     var children: [Personal] = []
-    var personalData: Personal = Personal(namePeronal: "", agePersonal: 0, nameChild: "", ageChild: 0)
+    var personalData: Personal = Personal(name: "", age: 0)
     
     func index(for section: Int) -> Section {
         
@@ -74,32 +72,32 @@ class DataContainerImpl: DataContainer {
     }
     
     func clearPersonalData() {
-        personalData.namePeronal = ""
-        personalData.agePersonal = 0
-        personalData.nameChild = ""
-        personalData.ageChild = 0
+        personalData.name = ""
+        personalData.age = 0
+        personalData.name = ""
+        personalData.age = 0
     }
     
     func updateChildName(at index: Int, name: String) {
         
         guard index < children.count else { return }
-        children[index].nameChild = name
+        children[index].name = name
     }
     
     func updateChildAge(at index: Int, age: Int) {
         guard index < children.count else { return }
-        children[index].ageChild = age
+        children[index].age = age
     }
     
     func updatePersonalName(name: String) {
-        personalData.namePeronal = name
+        personalData.name = name
     }
     
     func updatePersonalAge(age: Int) {
-        personalData.agePersonal = age
+        personalData.age = age
     }
     
     var isDataEmpty: Bool {
-        return personalData.namePeronal.isEmpty && personalData.agePersonal == 0 && children.isEmpty
+        return personalData.name.isEmpty && personalData.age == 0 && children.isEmpty
     }
 }

@@ -15,7 +15,7 @@
 		D23136852D65EE62005DA152 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D231367B2D65EE62005DA152 /* LaunchScreen.storyboard */; };
 		D23136872D65EF9B005DA152 /* DataContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23136862D65EF9B005DA152 /* DataContainer.swift */; };
 		D27420522D69153E00AB1646 /* ChildDataCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27420512D69153E00AB1646 /* ChildDataCell.swift */; };
-		D27420542D691FF700AB1646 /* ChildrenHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27420532D691FF700AB1646 /* ChildrenHeaderCell.swift */; };
+		D27420542D691FF700AB1646 /* ChildrenAddCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27420532D691FF700AB1646 /* ChildrenAddCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,7 +29,7 @@
 		D231367E2D65EE62005DA152 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D23136862D65EF9B005DA152 /* DataContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataContainer.swift; sourceTree = "<group>"; };
 		D27420512D69153E00AB1646 /* ChildDataCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildDataCell.swift; sourceTree = "<group>"; };
-		D27420532D691FF700AB1646 /* ChildrenHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildrenHeaderCell.swift; sourceTree = "<group>"; };
+		D27420532D691FF700AB1646 /* ChildrenAddCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildrenAddCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,7 +68,7 @@
 				D231367D2D65EE62005DA152 /* PersonalDataController.swift */,
 				D23136792D65EE62005DA152 /* PersonalDataCell.swift */,
 				D27420512D69153E00AB1646 /* ChildDataCell.swift */,
-				D27420532D691FF700AB1646 /* ChildrenHeaderCell.swift */,
+				D27420532D691FF700AB1646 /* ChildrenAddCell.swift */,
 				D23136862D65EF9B005DA152 /* DataContainer.swift */,
 				D231367A2D65EE62005DA152 /* Info.plist */,
 				D23136782D65EE62005DA152 /* Assets.xcassets */,
@@ -153,7 +153,7 @@
 				D23136802D65EE62005DA152 /* PersonalDataCell.swift in Sources */,
 				D23136812D65EE62005DA152 /* SceneDelegate.swift in Sources */,
 				D23136872D65EF9B005DA152 /* DataContainer.swift in Sources */,
-				D27420542D691FF700AB1646 /* ChildrenHeaderCell.swift in Sources */,
+				D27420542D691FF700AB1646 /* ChildrenAddCell.swift in Sources */,
 				D23136822D65EE62005DA152 /* PersonalDataController.swift in Sources */,
 				D27420522D69153E00AB1646 /* ChildDataCell.swift in Sources */,
 			);

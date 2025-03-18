@@ -9,8 +9,6 @@ import UIKit
 
 class PersonalDataController: UIViewController {
     
-    private var containerConstraint: NSLayoutConstraint?
-    
     private var tableDataSource: DataContainer = DataContainerImpl()
     
     private var tableView: UITableView = {
@@ -66,20 +64,24 @@ class PersonalDataController: UIViewController {
     private func setupTableHeaderView() {
         tableView.tableHeaderView = headerContainer
         headerContainer.addSubview(headerLabel)
-        headerContainer.frame = CGRect(x: 10, y: 200, width: 250, height: 50)
-        headerLabel.frame = CGRect(x: 10, y: 0, width: 600, height: 50)
+        headerContainer.frame = CGRect(x: 10,
+                                       y: 200,
+                                       width: 250,
+                                       height: 50)
+        headerLabel.frame = CGRect(x: 10,
+                                   y: 0,
+                                   width: 600,
+                                   height: 50)
     }
     
     private func setupConstaints() {
-        
-        containerConstraint = tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         
         NSLayoutConstraint.activate([
             
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            containerConstraint!
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
 }
@@ -92,21 +94,21 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let data = tableDataSource.index(for: indexPath.row)
+        let cellType = tableDataSource.index(for: indexPath.row)
         
-        switch data {
+        switch cellType {
         case .personalData:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: PersonalDataCell.cellIdentifier, for: indexPath) as? PersonalDataCell else {
                 return UITableViewCell()
             }
             
-            cell.configureCellPersonal(with: tableDataSource.personalData)
+            cell.configure(with: tableDataSource.personalData)
             cell.delegate = self
             
             return cell
             
         case .addChildren:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ChildrenHeaderCell.cellIdentifier, for: indexPath) as? ChildrenHeaderCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ChildrenAddCell.cellIdentifier, for: indexPath) as? ChildrenAddCell else {
                 return UITableViewCell()
             }
             
@@ -127,18 +129,18 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource {
             
             let shouldShowSeparator = childIndex < tableDataSource.children.count - 1
             
-            cell.configureCell(with: tableDataSource.children[childIndex], shouldShowSeparator: shouldShowSeparator)
+            cell.configure(with: tableDataSource.children[childIndex], shouldShowSeparator: shouldShowSeparator)
             
             cell.delegate = self
             return cell
         }
     }
     
-    private func hideAddButton() {
+    private func changeAddButtonVisibility(isHidden: Bool) {
         
-        let indexPath = IndexPath(row: 1, section: 0)
-        if let headerCell = tableView.cellForRow(at: indexPath) as? ChildrenHeaderCell {
-            headerCell.configure(isAddButtonHidden: true)
+        let indexPath = IndexPath(row: DataContainerImpl.Section.addChildren.rawValue, section: 0)
+        if let headerCell = tableView.cellForRow(at: indexPath) as? ChildrenAddCell {
+            headerCell.configure(isAddButtonHidden:isHidden)
         }
     }
 }
@@ -147,11 +149,13 @@ extension PersonalDataController: HeaderDelegate {
     
     func tapAddChildren(name: String, age: Int) {
         
+        tableView.endEditing(true)
+        
         guard tableDataSource.children.count < DataContainerImpl.limitChildren else {
             return showAlert(title: "Error", message: "Добавление детей невозможно"
             )}
         
-        let newChildren = Personal(name: "", age: 0)
+        let newChildren = Personal(name: name, age: age)
         
         tableDataSource.addChild(newChildren)
         
@@ -169,7 +173,7 @@ extension PersonalDataController: HeaderDelegate {
         }
         
         if tableDataSource.children.count >= DataContainerImpl.limitChildren {
-            hideAddButton()
+            changeAddButtonVisibility(isHidden: true)
         }
         updateClearButtonState()
     }
@@ -196,13 +200,7 @@ extension PersonalDataController: ChildDataCellDelegate {
             updateClearButtonState()
         }
         
-        if tableDataSource.children.count < DataContainerImpl.limitChildren {
-            
-            let headerIndexPath = IndexPath(row: 1, section: 0)
-            if let headerCell = tableView.cellForRow(at: headerIndexPath) as? ChildrenHeaderCell {
-                headerCell.configure(isAddButtonHidden: false)
-            }
-        }
+        changeAddButtonVisibility(isHidden: false)
     }
     
     func didUpdateChildName(cell: ChildDataCell, name: String) {
@@ -243,18 +241,18 @@ extension PersonalDataController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(PersonalDataCell.self, forCellReuseIdentifier: PersonalDataCell.cellIdentifier)
-        tableView.register(ChildrenHeaderCell.self, forCellReuseIdentifier: ChildrenHeaderCell.cellIdentifier)
+        tableView.register(ChildrenAddCell.self, forCellReuseIdentifier: ChildrenAddCell.cellIdentifier)
         tableView.register(ChildDataCell.self, forCellReuseIdentifier: ChildDataCell.cellIdentifier)
         tableView.separatorStyle = .none
     }
     
     private func setupNotifications() {
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(moveContentUp),
+                                               selector: #selector(keyboardWillShow),
                                                name: UIResponder.keyboardWillShowNotification,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(moveContentDown),
+                                               selector: #selector(keyboardWillHide),
                                                name: UIResponder.keyboardWillHideNotification,
                                                object: nil)
     }
@@ -278,34 +276,36 @@ extension PersonalDataController {
             width: 250,
             height: 50)
         
-        footerButton.addTarget(self, action: #selector(openAlert), for: .touchUpInside)
+        footerButton.addTarget(self, action: #selector(showClearDataAlert), for: .touchUpInside)
     }
     
     @objc
-    private func moveContentUp(notification: NSNotification) {
-        guard let keyboardSize = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else {
-            print("Ошибка")
+    private func keyboardWillShow(notification: NSNotification) {
+        guard let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
             return
         }
-        let keyBoardFrame = keyboardSize.cgRectValue
-        let keyboardHeight = keyBoardFrame.height
         
-        UIView.animate(withDuration: 0.3) {
-            self.containerConstraint?.constant = -keyboardHeight
-            self.view.layoutIfNeeded()
-        }
+        let keyboardHeight = keyboardSize.height
+        tableView.contentInset = UIEdgeInsets(top: 0,
+                                              left: 0,
+                                              bottom: keyboardHeight,
+                                              right: 0)
+        tableView.scrollIndicatorInsets = tableView.contentInset
     }
     
     @objc
-    private func moveContentDown(notification: NSNotification) {
-        UIView.animate(withDuration: 0.3) {
-            self.containerConstraint?.constant = 0
-            self.view.layoutIfNeeded()
-        }
+    private func keyboardWillHide(notification: NSNotification) {
+        tableView.contentInset = UIEdgeInsets.zero
+        tableView.scrollIndicatorInsets = UIEdgeInsets.zero
     }
     
     private func updateClearButtonState() {
-        footerButton.isEnabled = !tableDataSource.isDataEmpty
+        let isEnabled = !tableDataSource.isDataEmpty
+        footerButton.isEnabled = isEnabled
+        
+        let titleColor = isEnabled ? UIColor.red : UIColor.gray
+        footerButton.setTitleColor(titleColor, for: .normal)
+        footerButton.layer.borderColor = titleColor.cgColor
     }
     
     private func showAlert(
@@ -314,7 +314,9 @@ extension PersonalDataController {
         style: UIAlertController.Style = .alert,
         actions: [UIAlertAction] = []
     ) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: style)
+        let alert = UIAlertController(title: title,
+                                      message: message,
+                                      preferredStyle: style)
         
         for action in actions {
             alert.addAction(action)
@@ -329,7 +331,7 @@ extension PersonalDataController {
     }
     
     @objc
-    private func openAlert() {
+    private func showClearDataAlert() {
         
         let resetButton = UIAlertAction(title: "Да", style: .destructive) { _ in
             self.tableView.endEditing(true)

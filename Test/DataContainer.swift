@@ -63,7 +63,7 @@ class DataContainerImpl: DataContainer {
     }
     
     func removeChild(at index: Int) {
-        guard index >= 0, index < children.count else { return }
+        guard 0..<children.count ~= index else { return }
         children.remove(at: index)
     }
     

@@ -48,10 +48,10 @@ class ChildDataCell: UITableViewCell {
     }()
     
     private let childrenNameTextField: UITextField = {
-        let ChildrenNameTextField = UITextField()
-        ChildrenNameTextField.placeholder = "Введите имя"
-        ChildrenNameTextField.translatesAutoresizingMaskIntoConstraints = false
-        return ChildrenNameTextField
+        let сhildrenNameTextField = UITextField()
+        сhildrenNameTextField.placeholder = "Введите имя"
+        сhildrenNameTextField.translatesAutoresizingMaskIntoConstraints = false
+        return сhildrenNameTextField
     }()
     
     private let nameChildrenLabel: UILabel = {
@@ -90,7 +90,10 @@ class ChildDataCell: UITableViewCell {
         configure.baseForegroundColor = .systemBlue
         configure.background.cornerRadius = 15
         configure.background.backgroundColor = .systemBackground
-        configure.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
+        configure.contentInsets = NSDirectionalEdgeInsets(top: 8,
+                                                          leading: 16,
+                                                          bottom: 8,
+                                                          trailing: 16)
         deleteChildrenButton.translatesAutoresizingMaskIntoConstraints = false
         deleteChildrenButton.configuration = configure
         return deleteChildrenButton
@@ -101,9 +104,8 @@ class ChildDataCell: UITableViewCell {
         selectionStyle = .none
         setupUI()
         setupConstraints()
-        configureTableText()
-        
-        deleteChildrenButton.addTarget(self, action: #selector(deleteChildren), for: .touchUpInside)
+        setupDelegates()
+        setupAction()
     }
     
     @available(*, unavailable)
@@ -111,9 +113,13 @@ class ChildDataCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    @objc
-    private func deleteChildren(_ sender: UIButton) {
-        delegate?.didTapDeleteButton(cell: self)
+    private func setupAction() {
+        
+        let deleteAction = UIAction { [weak self] _ in
+            guard let self = self else { return }
+            self.delegate?.didTapDeleteButton(cell: self)
+        }
+        deleteChildrenButton.addAction(deleteAction, for: .touchUpInside)
     }
     
     private func setupUI() {
@@ -127,14 +133,20 @@ class ChildDataCell: UITableViewCell {
         contentView.addSubview(separatorView)
     }
     
-    private func configureTableText() {
+    private func setupDelegates() {
         childrenNameTextField.delegate = self
         childrenAgeTextField.delegate = self
     }
     
-    func configureCell(with data: Personal, shouldShowSeparator: Bool) {
+    func configure(with data: Personal, shouldShowSeparator: Bool) {
         childrenNameTextField.text = data.name
-        childrenAgeTextField.text = nil
+        if data.age == 0 && (childrenAgeTextField.text?.isEmpty ?? true) {
+            childrenAgeTextField.placeholder = "Введите возраст"
+            childrenAgeTextField.text = ""
+        } else {
+            childrenAgeTextField.text = "\(data.age)"
+        }
+        
         separatorView.isHidden = !shouldShowSeparator
     }
     
@@ -208,6 +220,7 @@ extension ChildDataCell: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
+        textField.endEditing(true)
         return true
     }
     
@@ -216,7 +229,8 @@ extension ChildDataCell: UITextFieldDelegate {
             let name = childrenNameTextField.text ?? ""
             delegate?.didUpdateChildName(cell: self, name: name)
         } else if textField == childrenAgeTextField {
-            let age = Int(childrenAgeTextField.text ?? "") ?? 0
+            let ageText = childrenAgeTextField.text ?? ""
+            let age = Int(ageText) ?? 0
             delegate?.didUpdateChildAge(cell: self, age: age)
         }
     }

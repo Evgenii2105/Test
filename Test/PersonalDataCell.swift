@@ -17,6 +17,8 @@ class PersonalDataCell: UITableViewCell {
     
     static let cellIdentifier = "DataItemCell"
     
+    static let maxLength = 30
+    
     weak var delegate: CustomTableDelegate?
     
     private let nameTextField: UITextField = {
@@ -97,7 +99,7 @@ class PersonalDataCell: UITableViewCell {
         ageDataContainer.addSubview(ageTextField)
     }
     
-    func configureCellPersonal(with data: Personal) {
+    func configure(with data: Personal) {
         nameTextField.text = data.name
         ageTextField.text = nil
     }
@@ -149,7 +151,7 @@ extension PersonalDataCell: UITextFieldDelegate {
         let currentText = textField.text ?? ""
         let newText = (currentText as NSString).replacingCharacters(in: range, with: string)
         
-        let maxLength = 30
+        let maxLength = PersonalDataCell.maxLength
         
         if newText.count > maxLength {
             let truncatedText = String(newText.prefix(maxLength))

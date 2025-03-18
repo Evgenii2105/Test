@@ -138,10 +138,9 @@ class ChildDataCell: UITableViewCell {
         childrenAgeTextField.delegate = self
     }
     
-    func configure(with data: Personal, shouldShowSeparator: Bool) {
+    func configure(with data: Person, shouldShowSeparator: Bool) {
         childrenNameTextField.text = data.name
         if data.age == 0 && (childrenAgeTextField.text?.isEmpty ?? true) {
-            childrenAgeTextField.placeholder = "Введите возраст"
             childrenAgeTextField.text = ""
         } else {
             childrenAgeTextField.text = "\(data.age)"

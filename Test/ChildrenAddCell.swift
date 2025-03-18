@@ -8,7 +8,7 @@
 import UIKit
 
 protocol HeaderDelegate: AnyObject {
-    func tapAddChildren(name: String, age: Int)
+    func tapAddChildren()
 }
 
 class ChildrenAddCell: UITableViewCell {
@@ -69,7 +69,7 @@ class ChildrenAddCell: UITableViewCell {
         
         let addAction = UIAction { [weak self] _ in
             guard let self = self else { return }
-            self.delegate?.tapAddChildren(name: "", age: 0)
+            self.delegate?.tapAddChildren()
         }
         addChildrenButton.addAction(addAction, for: .touchUpInside)
     }

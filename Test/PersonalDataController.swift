@@ -60,30 +60,6 @@ class PersonalDataController: UIViewController {
         setupNotifications()
         updateClearButtonState()
     }
-    
-    private func setupTableHeaderView() {
-        tableView.tableHeaderView = headerContainer
-        headerContainer.addSubview(headerLabel)
-        headerContainer.frame = CGRect(x: 10,
-                                       y: 200,
-                                       width: 250,
-                                       height: 50)
-        headerLabel.frame = CGRect(x: 10,
-                                   y: 0,
-                                   width: 600,
-                                   height: 50)
-    }
-    
-    private func setupConstaints() {
-        
-        NSLayoutConstraint.activate([
-            
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
-    }
 }
 
 extension PersonalDataController: UITableViewDelegate, UITableViewDataSource {
@@ -147,7 +123,7 @@ extension PersonalDataController: UITableViewDelegate, UITableViewDataSource {
 
 extension PersonalDataController: HeaderDelegate {
     
-    func tapAddChildren(name: String, age: Int) {
+    func tapAddChildren() {
         
         tableView.endEditing(true)
         
@@ -155,7 +131,7 @@ extension PersonalDataController: HeaderDelegate {
             return showAlert(title: "Error", message: "Добавление детей невозможно"
             )}
         
-        let newChildren = Personal(name: name, age: age)
+        let newChildren = DataContainerImpl.makeEmptyChild()
         
         tableDataSource.addChild(newChildren)
         
@@ -235,7 +211,33 @@ extension PersonalDataController: CustomTableDelegate {
     }
 }
 
-extension PersonalDataController {
+private extension PersonalDataController {
+    
+    private func setupConstaints() {
+        
+        NSLayoutConstraint.activate([
+            
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+    }
+    
+    private func setupTableHeaderView() {
+        tableView.tableHeaderView = headerContainer
+        headerContainer.addSubview(headerLabel)
+        let fdf = view.frame.width
+        headerContainer.frame = CGRect(x: 10,
+                                       y: 0,
+                                       width: fdf,
+                                       height: 50)
+        headerLabel.frame = CGRect(x: 10,
+                                   y: 0,
+                                   width: fdf,
+                                   height: 50)
+        
+    }
     
     private func configureTableView() {
         tableView.delegate = self

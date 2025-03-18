@@ -99,7 +99,7 @@ class PersonalDataCell: UITableViewCell {
         ageDataContainer.addSubview(ageTextField)
     }
     
-    func configure(with data: Personal) {
+    func configure(with data: Person) {
         nameTextField.text = data.name
         ageTextField.text = nil
     }

@@ -10,11 +10,11 @@ import Foundation
 protocol DataContainer: AnyObject {
     
     var personalArray: [DataContainerImpl.Section] { get }
-    var children: [Personal] { get }
-    var personalData: Personal { get }
+    var children: [Person] { get }
+    var personalData: Person { get }
     var isDataEmpty: Bool { get }
     
-    func addChild(_ child: Personal)
+    func addChild(_ child: Person)
     func removeChild(at index: Int)
     
     func clearChildren()
@@ -28,7 +28,7 @@ protocol DataContainer: AnyObject {
     func clearPersonalData()
 }
 
-struct Personal {
+struct Person {
     
     var name: String
     var age: Int
@@ -46,8 +46,12 @@ class DataContainerImpl: DataContainer {
         case children
     }
     
-    var children: [Personal] = []
-    var personalData: Personal = Personal(name: "", age: 0)
+    var children: [Person] = []
+    var personalData: Person = Person(name: "", age: 0)
+    
+    static func makeEmptyChild() -> Person {
+        Person(name: "", age: 0)
+    }
     
     func index(for section: Int) -> Section {
         
@@ -58,7 +62,7 @@ class DataContainerImpl: DataContainer {
         }
     }
     
-    func addChild(_ child: Personal) {
+    func addChild(_ child: Person) {
         children.append(child)
     }
     
